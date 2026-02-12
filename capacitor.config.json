@@ -1,0 +1,19 @@
+{
+    "appId": "com.yanimdaki.app",
+    "appName": "Yanımdaki",
+    "webDir": "www",
+    "server": {
+        "androidScheme": "https"
+    },
+    "plugins": {
+        "GoogleAuth": {
+            "scopes": [
+                "profile",
+                "email"
+            ],
+            "serverClientId": "231861965178-78t998edq2lkq22a0olirso03tunhpt0.apps.googleusercontent.com",
+            "androidClientId": "231861965178-78t998edq2lkq22a0olirso03tunhpt0.apps.googleusercontent.com",
+            "forceCodeForRefreshToken": true
+        }
+    }
+}

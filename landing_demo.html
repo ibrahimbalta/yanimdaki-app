@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Version: 1.1.0 - Marketplace Demo -->
+    <title>Yanımdaki | Yanıbaşında Al-Sat, Hızlıca Kazan (v1.1.0)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00ADEF;
+            --primary-dark: #0089bd;
+            --accent: #14b8a6;
+            --warm: #f59e0b;
+            --warm-light: #fef3c7;
+            --purple: #8b5cf6;
+            --pink: #ec4899;
+            --dark: #1e293b;
+            --muted: #64748b;
+            --cream: #fffbf5;
+            --peach: #fff7ed;
+            --soft-blue: #e0f7fa;
+            --nav-height: 60px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--cream);
+            color: var(--dark);
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        /* ========== WARM GRADIENT BG ========== */
+        .gradient-bg {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #fff7ed 0%, #e0f7fa 50%, #f0fdf4 100%);
+            z-index: -2;
+        }
+
+        .floating-shapes {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.4;
+            animation: float-shape 20s ease-in-out infinite;
+        }
+
+        .shape-1 {
+            width: 40vw;
+            height: 40vw;
+            background: linear-gradient(135deg, rgba(0, 173, 239, 0.15), transparent);
+            top: -10vw;
+            right: -10vw;
+        }
+
+        .shape-2 {
+            width: 30vw;
+            height: 30vw;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), transparent);
+            bottom: 20%;
+            left: -5vw;
+            animation-delay: -5s;
+        }
+
+        .shape-3 {
+            width: 25vw;
+            height: 25vw;
+            background: linear-gradient(135deg, rgba(20, 184, 166, 0.15), transparent);
+            top: 40%;
+            right: 10%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float-shape {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-30px) rotate(10deg);
+            }
+        }
+
+        /* ========== NAV ========== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: var(--nav-height);
+            padding: 0 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: clamp(1.4rem, 4vw, 1.8rem);
+            font-weight: 900;
+            z-index: 1100;
+        }
+
+        .nav-brand i {
+            color: var(--primary);
+        }
+
+        .nav-brand .brand-text {
+            color: var(--dark);
+        }
+
+        .nav-brand .brand-text span {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--dark);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-cta {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .mobile-toggle {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+            z-index: 1100;
+        }
+
+        /* ========== HERO SLIDER ========== */
+        .hero-slider-container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            overflow: hidden;
+            background: radial-gradient(circle at top right, rgba(0, 173, 239, 0.05), transparent 40%);
+        }
+
+        .hero-slide {
+            position: absolute !important;
+            inset: 0 !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transition: opacity 0.6s ease, visibility 0.6s !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            padding: 80px 20px 40px !important;
+            gap: 20px !important;
+            width: 100% !important;
+        }
+
+        .hero-slide.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 5;
+        }
+
+        .hero-content {
+            width: 100%;
+            max-width: 100%;
+            text-align: center;
+            flex: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            order: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 173, 239, 0.1);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 8vw, 4.8rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .hero-title .gradient {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 40px;
+            max-width: 540px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.4s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 10px 25px rgba(0, 173, 239, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--dark);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .hero-visual {
+            width: 100%;
+            max-width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: none;
+            margin-top: 10px;
+            order: 2;
+        }
+
+        .phone-container {
+            position: relative;
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        .phone-mockup {
+            width: 100%;
+            aspect-ratio: 9/17;
+            background: #0f172a;
+            border: 8px solid #1e293b;
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+            max-height: 55vh;
+        }
+
+        .phone-screen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+        }
+
+        .slider-dots {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 20;
+        }
+
+        .slider-dot {
+            width: 30px;
+            height: 5px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.4s;
+        }
+
+        .slider-dot.active {
+            background: var(--primary);
+            width: 50px;
+        }
+
+        /* ========== FEATURES ========== */
+        .section {
+            padding: 80px 8%;
+            text-align: center;
+        }
+
+        .section-badge {
+            display: inline-block;
+            background: var(--soft-blue);
+            color: var(--primary);
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 900;
+            margin-bottom: 60px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.4s;
+            text-align: left;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: white;
+            margin-bottom: 24px;
+        }
+
+        /* ========== DESKTOP OVERRIDES ========== */
+        @media screen and (min-width: 1201px) {
+            .hero-slide {
+                flex-direction: row !important;
+                justify-content: space-between !important;
+                padding: 0 8% !important;
+            }
+
+            .hero-content {
+                text-align: left !important;
+                align-items: flex-start !important;
+                max-width: 650px !important;
+            }
+
+            .hero-buttons {
+                justify-content: flex-start !important;
+            }
+
+            .hero-visual {
+                margin-top: 0 !important;
+            }
+
+            .slider-dots {
+                left: 8% !important;
+                transform: none !important;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="gradient-bg"></div>
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <!-- NAV -->
+    <nav>
+        <div class="nav-brand">
+            <i class="fas fa-location-dot"></i>
+            <span class="brand-text">Yanım<span>daki</span></span>
+        </div>
+        <div class="nav-links">
+            <a href="#ilan-pazari">İlan Pazarı</a>
+            <a href="#hizli-kazanc">Hızlı Kazanç</a>
+            <a href="#guven">Güvenli Ticaret</a>
+        </div>
+        <div class="nav-actions">
+            <a href="app.html" class="nav-cta">Hemen Başla</a>
+            <div class="mobile-toggle"><i class="fas fa-bars"></i></div>
+        </div>
+    </nav>
+
+    <!-- HERO SLIDER -->
+    <div class="hero-slider-container">
+        <!-- Slide 1: Marketplace Focus -->
+        <section class="hero-slide active">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-bolt"></i>
+                    Yeni Nesil 2. El Pazarı
+                </div>
+                <h1 class="hero-title">
+                    Yanıbaşında Al-Sat, <br>
+                    <span class="gradient">Hızlıca Kazan.</span>
+                </h1>
+                <p class="hero-desc">
+                    Kargo beklemek yok, komisyon yok. Yanımdaki ile saniyeler içinde ilan ver, kapı komşuna sat, anında
+                    nakde çevir.
+                </p>
+                <div class="hero-buttons">
+                    <a href="app.html" class="btn-primary">
+                        <i class="fas fa-rocket"></i> Ücretsiz İlan Ver
+                    </a>
+                    <a href="#kesfet" class="btn-secondary">
+                        <i class="fas fa-search"></i> İlanları Keşfet
+                    </a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="phone-container">
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <img src="landing_phone.png" alt="Yanımdaki Marketplace">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 2: Speed / Nearby -->
+        <section class="hero-slide">
+            <div class="hero-content">
+                <div class="hero-badge" style="background: rgba(20, 184, 166, 0.08); color: #14b8a6;">
+                    <i class="fas fa-map-marker-alt"></i>
+                    En Yakınındaki Fırsatlar
+                </div>
+                <h1 class="hero-title">
+                    Uzaklarda Arama, <br>
+                    <span class="gradient"
+                        style="background: linear-gradient(135deg, #14b8a6, #0d9488); -webkit-background-clip: text; background-clip: text;">Komşunda
+                        Bul.</span>
+                </h1>
+                <p class="hero-desc">
+                    Sadece yürüme mesafesindeki ilanları gör. İstediğin ürünü görerek al, kargo masrafından kurtul.
+                </p>
+                <div class="hero-buttons">
+                    <a href="app.html" class="btn-primary"
+                        style="background: linear-gradient(135deg, #14b8a6, #0d9488);">
+                        <i class="fas fa-location-arrow"></i> Yakınımdakileri Gör
+                    </a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="phone-container">
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <img src="landing_phone.png" alt="Yanımdaki Konum Bazlı">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- FEATURES -->
+    <section class="section" id="kesfet">
+        <div class="section-badge">🎯 Neden Yanımdaki Pazar?</div>
+        <h2 class="section-title">Hızlı, Güvenli, Lokal Ticaret</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon" style="background: linear-gradient(135deg, var(--warm), #d97706);"><i
+                        class="fas fa-bolt"></i></div>
+                <h3>Saniyeler İçinde Sat ⚡</h3>
+                <p>Fotoğrafını çek, fiyatını koy ve yayınla. En yakınındaki alıcıyla hemen mesajlaşmaya başla.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon" style="background: linear-gradient(135deg, var(--accent), #0d9488);"><i
+                        class="fas fa-truck-slash"></i></div>
+                <h3>Kargo Derdine Son 📦</h3>
+                <p>Paketleme ve kargo sırası bekleme yok. Kapı komşuna sat, elden teslim et, nakit kazan.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon" style="background: linear-gradient(135deg, var(--purple), #7c3aed);"><i
+                        class="fas fa-shield-heart"></i></div>
+                <h3>Güvenli Mahalle Ağı 🤝</h3>
+                <p>Tanıdığın çevreden güvenle alışveriş yap. Mahalle esnafının özel fırsatlarını kaçırma.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer style="padding: 60px 8%; text-align: center; border-top: 1px solid rgba(0,0,0,0.05); background: white;">
+        <div class="nav-brand" style="justify-content: center; margin-bottom: 20px;">
+            <i class="fas fa-location-dot"></i>
+            <span class="brand-text">Yanım<span>daki</span></span>
+        </div>
+        <p style="color: var(--muted); margin-bottom: 30px;">Türkiye'nin en hızlı yerel ilan pazarı.</p>
+        <div style="display: flex; justify-content: center; gap: 20px;">
+            <a href="app.html" class="btn-primary">Hemen Ücretsiz Katıl</a>
+        </div>
+    </footer>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.hero-slide');
+        setInterval(() => {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }, 5000);
+    </script>
+</body>
+
+</html>

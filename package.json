@@ -1,0 +1,27 @@
+{
+    "name": "yanimdaki",
+    "version": "1.0.0",
+    "description": "Mahallende Al-Sat, Paylaş, Yardımlaş",
+    "main": "app.js",
+    "scripts": {
+        "test": "vitest",
+        "test:unit": "vitest run",
+        "test:e2e": "playwright test",
+        "test:ui": "vitest --ui"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@capacitor/android": "^5.0.0",
+        "@capacitor/cli": "^5.0.0",
+        "@capacitor/core": "^5.0.0",
+        "@codetrix-studio/capacitor-google-auth": "^3.3.6"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.58.2",
+        "@types/node": "^25.2.3",
+        "happy-dom": "^20.6.1",
+        "jsdom": "^28.0.0",
+        "vitest": "^4.0.18"
+    }
+}

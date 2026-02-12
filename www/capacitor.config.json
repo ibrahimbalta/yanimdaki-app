@@ -1,0 +1,8 @@
+{
+    "appId": "com.yanimdaki.app",
+    "appName": "Yanımdaki",
+    "webDir": ".",
+    "server": {
+        "androidScheme": "https"
+    }
+}

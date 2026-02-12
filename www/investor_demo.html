@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yanımdaki - Yatırımcı Demo Sunumu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/black.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00A896;
+            --accent: #F59E0B;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+        }
+
+        .reveal {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .reveal h1,
+        .reveal h2,
+        .reveal h3 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            text-transform: none;
+            letter-spacing: -0.02em;
+        }
+
+        .reveal h1 {
+            font-size: 2.8em;
+        }
+
+        .reveal h2 {
+            font-size: 1.8em;
+            margin-top: -20px !important;
+        }
+
+        .reveal h3 {
+            font-size: 1.3em;
+        }
+
+        .reveal p,
+        .reveal li {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .brand-gradient {
+            background: linear-gradient(135deg, var(--primary), #14B8A6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .accent-text {
+            color: var(--accent);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-card .number {
+            font-size: 3em;
+            font-weight: 900;
+            color: var(--primary);
+            display: block;
+        }
+
+        .stat-card .label {
+            font-size: 0.9em;
+            color: #94A3B8;
+            margin-top: 10px;
+        }
+
+        .module-card {
+            background: linear-gradient(135deg, rgba(0, 168, 150, 0.1), rgba(20, 184, 166, 0.05));
+            border-radius: 12px;
+            padding: 15px;
+            border-left: 3px solid var(--primary);
+            text-align: left;
+            margin: 5px 0;
+            height: auto;
+        }
+
+        .module-card h4 {
+            color: var(--primary);
+            margin: 0 0 5px 0;
+            font-size: 1em;
+        }
+
+        .module-card p {
+            font-size: 0.75em;
+            color: #CBD5E1;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .problem-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .solution-box {
+            background: rgba(0, 168, 150, 0.1);
+            border: 2px solid rgba(0, 168, 150, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 10px 0;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 40px 0;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        .timeline-item {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .timeline-item .dot {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2em;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, var(--primary), #14B8A6);
+            color: white;
+            padding: 20px 50px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 30px;
+            text-decoration: none;
+            box-shadow: 0 10px 40px rgba(0, 168, 150, 0.4);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .feature-item i {
+            color: var(--primary);
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .feature-item h4 {
+            margin: 10px 0 5px;
+            font-size: 1em;
+        }
+
+        .feature-item p {
+            font-size: 0.8em;
+            color: #94A3B8;
+            margin: 0;
+        }
+
+        .revenue-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+        }
+
+        .revenue-table th,
+        .revenue-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .revenue-table th {
+            background: rgba(0, 168, 150, 0.2);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .revenue-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .highlight {
+            background: linear-gradient(90deg, var(--accent), #F97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-big {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .slide-number {
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .icon-large {
+            font-size: 4em;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .team-member {
+            display: inline-block;
+            margin: 0 20px;
+            text-align: center;
+        }
+
+        .team-member img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid var(--primary);
+        }
+
+        .ask-box {
+            background: linear-gradient(135deg, var(--primary), #14B8A6);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+        }
+
+        .ask-box h3 {
+            margin: 0 0 15px;
+            font-size: 1.8em;
+        }
+
+        .ask-box p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- SLIDE 1: Title -->
+            <section data-background="linear-gradient(135deg, #0F172A 0%, #1E293B 100%)">
+                <div class="logo-big">📍</div>
+                <h1><span class="brand-gradient">Yanımdaki</span></h1>
+                <h3 style="color: #94A3B8; font-weight: 400;">Mahallenin Sosyal ve Ekonomik İşletim Sistemi</h3>
+                <p style="margin-top: 60px; color: #64748B;">
+                    <i class="fas fa-calendar"></i> Ocak 2026 | Stratejik Vizyon Sunumu
+                </p>
+            </section>
+
+            <!-- SLIDE 2: Problem -->
+            <section data-background="linear-gradient(135deg, #0F172A 0%, #1E293B 100%)">
+                <h2>🚨 Problem</h2>
+                <div class="problem-box">
+                    <h3 style="color: #EF4444; margin-top: 0;">Türkiye'de 28 Milyon Hane</h3>
+                    <p style="font-size: 1.2em;">
+                        Her gün <strong>tonlarca kullanılabilir ürün</strong> çöpe atılıyor.<br>
+                        Esnaflar müşteriye ulaşamıyor. Komşular birbirini tanımıyor.
+                    </p>
+                </div>
+                <div class="stat-grid" style="grid-template-columns: repeat(2, 1fr);">
+                    <div class="stat-card">
+                        <span class="number" style="color: #EF4444;">%72</span>
+                        <span class="label">Kullanılmayan eşya oranı</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="number" style="color: #EF4444;">%65</span>
+                        <span class="label">Esnafların dijital görünürlük eksikliği</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 3: Solution -->
+            <section data-background="linear-gradient(135deg, #0F172A 0%, #1E293B 100%)">
+                <h2><span class="brand-gradient">💡 Çözümümüz</span></h2>
+                <div class="solution-box">
+                    <h3 style="color: var(--primary); margin-top: 0;">Hiperlokal Sosyal Ticaret Platformu</h3>
+                    <p style="font-size: 1.1em;">
+                        <strong>Yanımdaki</strong>, mahalle bazlı alışveriş, paylaşım ve esnaf keşfi yapabileceğiniz<br>
+                        <em>Türkiye'nin ilk mahalle odaklı süper uygulamasıdır.</em>
+                    </p>
+                </div>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <i class="fas fa-location-dot"></i>
+                        <h4>Hiperlokal</h4>
+                        <p>500m - 5km yarıçapında anlık eşleşme</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-store"></i>
+                        <h4>Esnaf Entegrasyonu</h4>
+                        <p>Küçük işletmelerin dijital vitrini</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-hand-holding-heart"></i>
+                        <h4>Sosyal Etki</h4>
+                        <p>"Askıda" sistemiyle dayanışma ekonomisi</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-shield-halved"></i>
+                        <h4>Güvenli Noktalar</h4>
+                        <p>Anlaşmalı işletmelerde güvenli teslimat</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 4: How It Works (Demo) -->
+            <section data-background="linear-gradient(135deg, #0F172A 0%, #1E293B 100%)">
+                <h2>🎬 Nasıl Çalışır?</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="dot">1</div>
+                        <h4>Kayıt</h4>
+                        <p style="font-size: 0.8em; color: #94A3B8;">30 saniyede üyelik</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="dot">2</div>
+                        <h4>Konum</h4>
+                        <p style="font-size: 0.8em; color: #94A3B8;">Mahallenizi seçin</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="dot">3</div>
+                        <h4>Keşfet</h4>
+                        <p style="font-size: 0.8em; color: #94A3B8;">Yakınınızdaki fırsatlar</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="dot">4</div>
+                        <h4>Bağlan</h4>
+                        <p style="font-size: 0.8em; color: #94A3B8;">Mesajlaş & Anlaş</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="dot">5</div>
+                        <h4>Buluş</h4>
+                        <p style="font-size: 0.8em; color: #94A3B8;">Güvenli Noktada teslim</p>
+                    </div>
+                </div>
+                <p style="margin-top: 40px;">
+                    <a href="https://yanimdaki.com" target="_blank" class="cta-button">
+                        <i class="fas fa-external-link-alt"></i> Canlı Demo
+                    </a>
+                </p>
+            </section>
+
+            <!-- SLIDE 5: Ecosystem Modules -->
+            <section data-background="linear-gradient(135deg, #0F172A 0%, #1E293B 100%)">
+                <h2>🧩 Ekosistem Modülleri</h2>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; transform: scale(0.9);">
+                    <div class="module-card">
+                        <h4><i class="fas fa-radar"></i> Canlı Radar</h4>
+                        <p>Hiperlokal fırsatların gerçek zamanlı harita takibi.</p>
+                    </div>
+                    <div class="module-card">
+                        <h4><i class="fas fa-store"></i> Esnaf Vitrini</h4>
+                        <p>KOBİ'lerin dijital dönüşümü ve yerel görünürlük.</p>
+                    </div>
+                    <div class="module-card">
+                        <h4><i class="fas fa-recycle"></i> İsrafı Önle</h4>
+                        <p>Son kullanma tarihi yaklaşan ürünlerin ekonomiye kazandırılması.</p>
+                    </div>
+                    <div class="module-card">
+                        <h4><i class="fas fa-box-open"></i> Sürpriz Paket</h4>
+                        <p>Günün sonunda kalan taze ürünlerin uygun fiyatla satışı.</p>
+                    </div>
+                    <div class="module-card">
+                        <h4><i class="fas fa-rotate"></i> Takas & Ödünç</h4>
+                        <p>Komşular arası kaynak paylaşımı ve döngüsel ekonomi.</p>
+                    </div>
+                    <div class="module-card">
+                        <h4><i class="fas fa-users-rays"></i> Toplu Satış</h4>
+                        <p>Mahalle bazlı kolektif satın alma ile maliyet avantajı.</p>
+                    </div>
+                    <div class="module-card">
+                        <h4><i class="fas fa-hand-holding-heart"></i> Askıda Bugün</h4>
+                        <p>Gelişmiş dijital dayanışma ve sosyal yardım ağı.</p>
+                    </div>
+                    <div class="module-card">
+                        <h4><i class="fas fa-bullhorn"></i> İhtiyacım Var</h4>
+                        <p>Talebe dayalı yerel pazar yeri eşleşmesi.</p>
+                    </div>
+                    <div class="module-card">
+                        <h4><i class="fas fa-shield-halved"></i> Güvenli Nokta</h4>
+                        <p>İşletme destekli lojistik ve teslimat güvenliği.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 6: Business Model -->
+            <section data-background="linear-gradient(135deg, #0F172A 0%, #1E293B 100%)">
+                <h2>💰 Gelir Modeli</h2>
+                <table class="revenue-table">
+                    <thead>
+                        <tr>
+                            <th>Gelir Kanalı</th>
+                            <th>Açıklama</th>
+                            <th>Potansiyel</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><i class="fas fa-gem" style="color: var(--accent);"></i> Vitrin Paketleri</td>
+                            <td>Öne çıkarma & premium listeleme</td>
+                            <td><strong>Ana Gelir</strong></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-store" style="color: var(--primary);"></i> Esnaf Abonelikleri</td>
+                            <td>Aylık/yıllık kurumsal paketler</td>
+                            <td><strong>Tekrarlayan</strong></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-handshake" style="color: #F59E0B;"></i> Partner Noktaları</td>
+                            <td>Güvenli Nokta işletme komisyonları</td>
+                            <td><strong>Ölçeklenebilir</strong></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-ad" style="color: #8B5CF6;"></i> Reklam & Sponsorluk</td>
+                            <td>Hedefli yerel reklamlar</td>
+                            <td><strong>Yüksek Marj</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- SLIDE 7: Market Potential -->
+            <section data-background="linear-gradient(135deg, #0F172A 0%, #1E293B 100%)">
+                <h2>📈 Pazar Potansiyeli</h2>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <span class="number">85M</span>
+                        <span class="label">Nüfusun %90'ı kentlerde yaşıyor</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="number">28M</span>
+                        <span class="label">Hane başına düşen paylaşılamayan değer</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="number">3.2M</span>
+                        <span class="label">Dijitalleşmeyi bekleyen yerel işletme</span>
+                    </div>
+                </div>
+                <div class="solution-box" style="margin-top: 30px;">
+                    <h3 style="color: var(--accent); margin: 0;">Analiz: Atıl Kaynakların Optimizasyonu</h3>
+                    <p style="margin: 10px 0 0;">Yanımdaki, mahalle içindeki saklı ekonomik değeri ve sosyal sermayeyi
+                        teknoloji ile açığa çıkarır.</p>
+                </div>
+            </section>
+
+            <!-- SLIDE 8: Traction -->
+            <section data-background="linear-gradient(135deg, #0F172A 0%, #1E293B 100%)">
+                <h2>🚀 Mevcut Durum</h2>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <span class="number" style="color: var(--accent);">✅</span>
+                        <span class="label">MVP Tamamlandı</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="number" style="color: var(--accent);">✅</span>
+                        <span class="label">Web + Android Yayında</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="number" style="color: var(--accent);">✅</span>
+                        <span class="label">Admin Panel Aktif</span>
+                    </div>
+                </div>
+                <div class="feature-grid" style="margin-top: 30px;">
+                    <div class="feature-item" style="border-left: 3px solid var(--primary);">
+                        <h4>Teknik Altyapı</h4>
+                        <p>Firebase, PWA, Capacitor, Google Maps API</p>
+                    </div>
+                    <div class="feature-item" style="border-left: 3px solid var(--accent);">
+                        <h4>Hedef Q1 2026</h4>
+                        <p>Bartın'da 3 pilot mahalle lansmanı</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 9: Competitive Edge -->
+            <section data-background="linear-gradient(135deg, #0F172A 0%, #1E293B 100%)">
+                <h2>⚔️ Rekabet Avantajı</h2>
+                <div class="two-column">
+                    <div>
+                        <h3 style="color: #EF4444;">Mevcut Oyuncular</h3>
+                        <ul style="text-align: left; color: #94A3B8;">
+                            <li>Şehir bazlı, geniş coğrafya</li>
+                            <li>Anonim, güvensiz alışveriş</li>
+                            <li>Esnaf desteği yok</li>
+                            <li>Sosyal katman eksik</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color: var(--primary);">Yanımdaki</h3>
+                        <ul style="text-align: left;">
+                            <li><strong>Mahalle odaklı</strong> hiperlokal</li>
+                            <li><strong>Güvenli Noktalar</strong> ile teslim</li>
+                            <li><strong>Esnaf entegrasyonu</strong> yerleşik</li>
+                            <li><strong>Askıda</strong> ile sosyal etki</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 10: Growth Focus -->
+            <section data-background="linear-gradient(135deg, #0F172A 0%, #1E293B 100%)">
+                <h2>🎯 Büyüme ve Ölçeklenme Odağı</h2>
+                <div class="ask-box">
+                    <h3>Stratejik Ortaklık ve Yayılım</h3>
+                    <p>Mahalle ekonomisini domine edecek teknolojik altyapı yatırımı</p>
+                </div>
+                <div class="stat-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 40px;">
+                    <div class="stat-card">
+                        <span class="number" style="font-size: 1.8em;">AR-GE</span>
+                        <span class="label">Yapay Zeka Destekli Eşleşme</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="number" style="font-size: 1.8em;">NETWORK</span>
+                        <span class="label">Partner İşletme Ağının Genişletilmesi</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="number" style="font-size: 1.8em;">SCALING</span>
+                        <span class="label">Operasyonel Mükemmellik & Büyüme</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 11: Vision -->
+            <section data-background="linear-gradient(135deg, #0F172A 0%, #1E293B 100%)">
+                <h2>🌍 Vizyon</h2>
+                <blockquote
+                    style="font-size: 1.4em; border-left: 4px solid var(--primary); padding-left: 30px; font-style: italic; color: #E2E8F0;">
+                    "Her mahallede bir Yanımdaki, her komşuda bir dost."
+                </blockquote>
+                <div class="timeline" style="margin-top: 50px;">
+                    <div class="timeline-item">
+                        <div class="dot" style="background: var(--primary);">1</div>
+                        <h4>2026</h4>
+                        <p style="font-size: 0.75em; color: #94A3B8;">Bartın Pilot</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="dot" style="background: var(--accent);">2</div>
+                        <h4>2027</h4>
+                        <p style="font-size: 0.75em; color: #94A3B8;">5 Büyükşehir</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="dot" style="background: #8B5CF6;">3</div>
+                        <h4>2028</h4>
+                        <p style="font-size: 0.75em; color: #94A3B8;">Türkiye Geneli</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="dot" style="background: #EC4899;">4</div>
+                        <h4>2029</h4>
+                        <p style="font-size: 0.75em; color: #94A3B8;">Bölgesel Genişleme</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 12: Thank You / Contact -->
+            <section data-background="linear-gradient(135deg, var(--primary) 0%, #14B8A6 100%)">
+                <div class="logo-big">📍</div>
+                <h1 style="color: white;">Teşekkürler!</h1>
+                <h3 style="color: rgba(255,255,255,0.9); font-weight: 400;">Sorularınızı Bekliyoruz</h3>
+                <div style="margin-top: 50px;">
+                    <p style="color: rgba(255,255,255,0.8);">
+                        <i class="fas fa-globe"></i> <a href="https://yanimdaki.web.app"
+                            style="color: white;">yanimdaki.web.app</a>
+                    </p>
+                    <p style="color: rgba(255,255,255,0.8);">
+                        <i class="fas fa-envelope"></i> iletisim@yanimdaki.com
+                    </p>
+                </div>
+                <a href="https://yanimdaki.web.app" target="_blank" class="cta-button"
+                    style="background: white; color: var(--primary);">
+                    <i class="fas fa-play"></i> Uygulamayı Dene
+                </a>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            transition: 'slide',
+            transitionSpeed: 'default',
+            controls: true,
+            progress: true,
+            center: true,
+            width: 1200,
+            height: 700,
+            margin: 0.1,
+            autoSlide: 25000, // 25 saniye (toplamda ~5dk)
+            loop: false
+        });
+    </script>
+</body>
+
+</html>

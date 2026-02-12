@@ -1,0 +1,24 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "android/**",
+      "**/*.exe",
+      "**/*.apk",
+      "firebase.exe",
+      "firebase_v2.exe",
+      "node.exe",
+      "*.backup",
+      "yanimdaki-firebase-adminsdk-*.json"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/app.html"
+      }
+    ]
+  }
+}

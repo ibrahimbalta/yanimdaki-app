@@ -1,0 +1,37 @@
+name: Scheduled Tests
+
+on:
+  schedule:
+    # 09:00 and 22:00 TR Time (UTC+3)
+    # 09:00 TR -> 06:00 UTC
+    # 22:00 TR -> 19:00 UTC
+    - cron: '0 6,19 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Unit Tests
+        run: npm run test:unit
+
+      # For E2E tests, we need to serve the app. 
+      # Since it's a static app, we can use a simple server.
+      - name: Run E2E Tests
+        run: |
+          npx serve -s . -l 5173 &
+          npx playwright test
