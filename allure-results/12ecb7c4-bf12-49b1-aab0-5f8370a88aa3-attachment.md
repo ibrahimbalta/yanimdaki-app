@@ -1,0 +1,128 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - navigation [ref=e5]:
+          - generic [ref=e6] [cursor=pointer]:
+            - generic [ref=e7]: 
+            - generic [ref=e8]: Ana Sayfa
+          - generic [ref=e9] [cursor=pointer]:
+            - generic [ref=e10]: 
+            - generic [ref=e11]: Paylaş
+          - generic [ref=e12] [cursor=pointer]:
+            - generic [ref=e13]: 
+            - generic [ref=e14]: Hakkında
+          - generic [ref=e15] [cursor=pointer]:
+            - generic [ref=e16]: 
+            - generic [ref=e17]: İletişim
+        - generic [ref=e19]:
+          - generic [ref=e20]:
+            - generic [ref=e21]: 
+            - generic [ref=e22]: Yanımdaki
+          - paragraph [ref=e23]: Elden çıkar, yakında buluş.
+        - generic [ref=e24]:
+          - link "" [ref=e25] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e26]: 
+          - link "" [ref=e27] [cursor=pointer]:
+            - /url: https://x.com/yanimdakiapp
+            - generic [ref=e28]: 
+          - link "" [ref=e29] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e30]: 
+          - link "" [ref=e31] [cursor=pointer]:
+            - /url: https://www.instagram.com/yanimdakiapp/
+            - generic [ref=e32]: 
+          - link "" [ref=e33] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e34]: 
+    - main [ref=e35]:
+      - text: "                                           #  ?   @  ?               500 m 1 km 2 km   +             +   +                                                                                      +"
+      - generic [ref=e37]:
+        - generic [ref=e38]:
+          - generic [ref=e41]:
+            - heading "Eşyalarını Nakit Sat" [level=2] [ref=e42]
+            - paragraph [ref=e43]: Kullanmadığın eşyalarını mahallendeki komşularına güvenle sat, anında nakde çevir.
+          - generic [ref=e46]:
+            - heading "Aradığını Yakında Bul" [level=2] [ref=e47]
+            - paragraph [ref=e48]: İhtiyacın olan eşyayı uzağa gitmeden, mahallenizdeki komşularından ödünç al veya bul.
+          - generic [ref=e51]:
+            - heading "İyiliği Yay" [level=2] [ref=e52]
+            - paragraph [ref=e53]: Yardımlaşma kültürünü dijitalde yaşat, mahalle bağlarını güçlendir.
+          - generic [ref=e56]:
+            - heading "Esnaf Fırsatlarını Yakala" [level=2] [ref=e57]
+            - paragraph [ref=e58]: Mahalle esnafının sana özel sunduğu günlük fırsatlardan ve indirimlerden anında haberdar ol.
+        - generic [ref=e65]:
+          - button "Atla" [ref=e66] [cursor=pointer]
+          - button "Sonraki" [ref=e67] [cursor=pointer]
+      - text:               +    +                      +  
+    - complementary [ref=e68]:
+      - generic [ref=e69]:
+        - navigation [ref=e70]:
+          - generic [ref=e71] [cursor=pointer]:
+            - generic [ref=e72]: 
+            - generic [ref=e73]: Profilim
+          - generic [ref=e74] [cursor=pointer]:
+            - generic [ref=e75]: 
+            - generic [ref=e76]: İlanlarım
+          - generic [ref=e77] [cursor=pointer]:
+            - generic [ref=e78]: 
+            - generic [ref=e79]: Tekliflerim
+          - generic [ref=e80] [cursor=pointer]:
+            - generic [ref=e81]: 
+            - generic [ref=e82]: Mesajlarım
+        - generic [ref=e83]:
+          - generic [ref=e84] [cursor=pointer]:
+            - generic [ref=e85]:
+              - generic [ref=e86]: 
+              - generic [ref=e87]: Uygulama Özellikleri
+            - generic [ref=e88]: 
+          - generic [ref=e89]:
+            - generic [ref=e90]:
+              - generic [ref=e91]: 
+              - generic [ref=e92]:
+                - heading "Hızlı Nakit ⚡" [level=3] [ref=e93]
+                - paragraph [ref=e94]: Eşyalarını 24 saatte nakde çevir.
+            - generic [ref=e95]:
+              - generic [ref=e96]: 
+              - generic [ref=e97]:
+                - heading "Sürpriz Paket 📦" [level=3] [ref=e98]
+                - paragraph [ref=e99]: İndirimli gıda paketlerini keşfet.
+            - generic [ref=e100]:
+              - generic [ref=e101]: 
+              - generic [ref=e102]:
+                - heading "Esnaf Fırsatları 🏘️" [level=3] [ref=e103]
+                - paragraph [ref=e104]: Mahalle esnafından anlık teklifler.
+            - generic [ref=e105]:
+              - generic [ref=e106]: 
+              - generic [ref=e107]:
+                - heading "Takas Seçeneği 🤝" [level=3] [ref=e108]
+                - paragraph [ref=e109]: Ürünlerini diğerleriyle takas yap.
+            - generic [ref=e110]:
+              - generic [ref=e111]: 
+              - generic [ref=e112]:
+                - heading "Usta & Yardım 🛠️" [level=3] [ref=e113]
+                - paragraph [ref=e114]: Komşularından teknik destek al.
+            - generic [ref=e115]:
+              - generic [ref=e116]: 
+              - generic [ref=e117]:
+                - heading "Paylaş & İyilik Yap 🌱" [level=3] [ref=e118]
+                - paragraph [ref=e119]: Ücretsiz hediye et, paylaş.
+        - generic [ref=e121]:
+          - link "Google Play'den indirin" [ref=e122] [cursor=pointer]:
+            - /url: "#"
+            - img "Google Play'den indirin" [ref=e123]
+          - link "App Store'dan indirin" [ref=e124] [cursor=pointer]:
+            - /url: "#"
+            - img "App Store'dan indirin" [ref=e125]
+  - text:                                                               
+  - generic [ref=e126]:
+    - generic [ref=e127]:
+      - generic [ref=e128]: Selam! Ben **Pusula**, senin Yanımdaki mahalle rehberinim! Yanımdaki dünyasına hoş geldin! 🧭✨
+      - button "Memnun oldum!" [ref=e129] [cursor=pointer]
+    - img "Rehber"
+  - text: 
+```

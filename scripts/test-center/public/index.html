@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yanımdaki Test Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #22c55e;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        textarea {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: white;
+            padding: 12px;
+            margin-bottom: 12px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        #terminal {
+            background: #000;
+            color: #22c55e;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 15px;
+            border-radius: 8px;
+            height: 300px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            background: #334155;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1 style="margin:0">🚀 Yanımdaki <span style="color:var(--primary)">Test Center</span></h1>
+                <p style="color:var(--text-muted); margin: 5px 0 0">Test Yönetim ve Otomasyon Paneli</p>
+            </div>
+            <div class="nav-links">
+                <a href="http://localhost:3000" target="_blank">Panel'i Aç</a>
+                <a href="https://github.com/ibrahimbalta/yanimdaki-app/actions" target="_blank">GitHub Actions</a>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2><i class="fas fa-play"></i> Hızlı Başlat</h2>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button id="runUnit"><i class="fas fa-vial"></i> Yerel Unit Testleri Çalıştır</button>
+                    <button id="runE2E"><i class="fas fa-desktop"></i> Yerel E2E Testleri Çalıştır</button>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                        <select id="browserSelect"
+                            style="background: #334155; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">
+                            <option value="chromium">Google Chrome / Chromium</option>
+                            <option value="firefox">Firefox</option>
+                            <option value="webkit">Safari (WebKit)</option>
+                        </select>
+                        <label
+                            style="font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="headedMode" checked> Tarayıcıyı Göster
+                        </label>
+                    </div>
+                    <button id="triggerGH" class="btn-success"><i class="fab fa-github"></i> GitHub Actions
+                        Tetikle</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-plus-circle"></i> Yeni Senaryo Ekle</h2>
+                <textarea id="scenarioText" rows="3"
+                    placeholder="Örn: Kullanıcı ana sayfada 'Giriş Yap' butonuna tıklar..."></textarea>
+                <div style="display: flex; gap: 10px;">
+                    <button id="genE2E" style="flex:1">E2E Olarak Üret</button>
+                    <button id="genUnit" style="flex:1; background: #334155;">Unit Olarak Üret</button>
+                </div>
+                <p id="genStatus" style="font-size: 0.8rem; margin-top: 10px; color: var(--text-muted)"></p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="display:flex; justify-content:space-between">
+                <span><i class="fas fa-terminal"></i> Canlı Terminal Çıktısı</span>
+                <span id="testStatus" class="status-badge">Hazır</span>
+            </h2>
+            <div id="terminal">Sistem hazır. Test başlatmak için butonları kullanın...</div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const terminal = document.getElementById('terminal');
+        const statusBadge = document.getElementById('testStatus');
+
+        function log(msg) {
+            terminal.innerText += msg;
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function setStatus(status, color) {
+            statusBadge.innerText = status;
+            statusBadge.style.background = color || '#334155';
+        }
+
+        // --- Test Running ---
+        document.getElementById('runUnit').onclick = () => {
+            terminal.innerText = '';
+            log('> Unit testler baslatiliyor...\n');
+            setStatus('Çalışıyor...', '#6366f1');
+            socket.emit('run-test', 'unit');
+        };
+
+        document.getElementById('runE2E').onclick = () => {
+            const headed = document.getElementById('headedMode').checked;
+            const project = document.getElementById('browserSelect').value;
+            terminal.innerText = '';
+            log(`> E2E testler baslatiliyor... [${project}] ${headed ? '(Tarayici aciliyor)' : ''}\n`);
+            setStatus('Çalışıyor...', '#6366f1');
+            socket.emit('run-test', { type: 'e2e', headed, project });
+        };
+
+        socket.on('test-output', (data) => log(data));
+        socket.on('test-finished', (code) => {
+            log(`\n> Islem tamamlandi. Exit code: ${code}`);
+            setStatus(code === 0 ? 'Başarılı' : 'Hatalı', code === 0 ? '#22c55e' : '#ef4444');
+        });
+
+        // --- GitHub Trigger ---
+        document.getElementById('triggerGH').onclick = async () => {
+            const btn = document.getElementById('triggerGH');
+            btn.disabled = true;
+            try {
+                const resp = await fetch('/api/trigger-github', { method: 'POST' });
+                const result = await resp.json();
+                alert(result.message);
+            } catch (e) {
+                alert('Hata: ' + e.message);
+            }
+            btn.disabled = false;
+        };
+
+        // --- Generation ---
+        async function generate(type) {
+            const text = document.getElementById('scenarioText').value;
+            if (!text) return alert('Lutfen senaryo yazin');
+
+            const status = document.getElementById('genStatus');
+            status.innerText = 'Uretiliyor...';
+
+            try {
+                const resp = await fetch('/api/generate-test', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ scenario: text, type })
+                });
+                const result = await resp.json();
+                status.innerText = 'Dosya olusturuldu: ' + result.fileName;
+            } catch (e) {
+                status.innerText = 'Hata: ' + e.message;
+            }
+        }
+
+        document.getElementById('genE2E').onclick = () => generate('e2e');
+        document.getElementById('genUnit').onclick = () => generate('unit');
+    </script>
+</body>
+
+</html>

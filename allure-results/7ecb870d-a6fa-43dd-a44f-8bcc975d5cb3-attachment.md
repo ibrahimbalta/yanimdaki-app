@@ -1,0 +1,353 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - navigation [ref=e5]:
+          - generic [ref=e6] [cursor=pointer]:
+            - generic [ref=e7]: 
+            - generic [ref=e8]: Ana Sayfa
+          - generic [ref=e9] [cursor=pointer]:
+            - generic [ref=e10]: 
+            - generic [ref=e11]: Paylaş
+          - generic [ref=e12] [cursor=pointer]:
+            - generic [ref=e13]: 
+            - generic [ref=e14]: Hakkında
+          - generic [ref=e15] [cursor=pointer]:
+            - generic [ref=e16]: 
+            - generic [ref=e17]: İletişim
+        - generic [ref=e19]:
+          - generic [ref=e20]:
+            - generic [ref=e21]: 
+            - generic [ref=e22]: Yanımdaki
+          - paragraph [ref=e23]: Elden çıkar, yakında buluş.
+        - generic [ref=e24]:
+          - link "" [ref=e25] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e26]: 
+          - link "" [ref=e27] [cursor=pointer]:
+            - /url: https://x.com/yanimdakiapp
+            - generic [ref=e28]: 
+          - link "" [ref=e29] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e30]: 
+          - link "" [ref=e31] [cursor=pointer]:
+            - /url: https://www.instagram.com/yanimdakiapp/
+            - generic [ref=e32]: 
+          - link "" [ref=e33] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e34]: 
+    - main [ref=e35]:
+      - text:                              
+      - generic [ref=e36]:
+        - generic [ref=e37]:
+          - button "" [ref=e38] [cursor=pointer]:
+            - generic [ref=e39]: 
+          - generic [ref=e41] [cursor=pointer]:
+            - generic [ref=e42]: 
+            - generic [ref=e43]: Yanımdaki
+        - generic [ref=e44]:
+          - generic [ref=e45] [cursor=pointer]: 
+          - generic [ref=e47] [cursor=pointer]: 
+      - text: "         #  ?   @  ?    "
+      - generic [ref=e49]:
+        - generic [ref=e50]:
+          - generic [ref=e51]:
+            - generic [ref=e52]: 
+            - textbox "Ürünlerde ara..." [ref=e53]
+            - button "" [ref=e54] [cursor=pointer]:
+              - generic [ref=e55]: 
+            - button "Filtrele" [ref=e56] [cursor=pointer]:
+              - generic [ref=e57]: 
+          - generic [ref=e58]:
+            - generic [ref=e59]: 
+            - combobox [ref=e60] [cursor=pointer]:
+              - option "Tüm Türkiye" [selected]
+              - option "Adana'da Bugün"
+              - option "Adıyaman'da Bugün"
+              - option "Afyonkarahisar'da Bugün"
+              - option "Ağrı'da Bugün"
+              - option "Aksaray'da Bugün"
+              - option "Amasya'da Bugün"
+              - option "Ankara'da Bugün"
+              - option "Antalya'da Bugün"
+              - option "Ardahan'da Bugün"
+              - option "Artvin'de Bugün"
+              - option "Aydın'da Bugün"
+              - option "Balıkesir'de Bugün"
+              - option "Bartın'da Bugün"
+              - option "Batman'da Bugün"
+              - option "Bayburt'ta Bugün"
+              - option "Bilecik'te Bugün"
+              - option "Bingöl'de Bugün"
+              - option "Bitlis'te Bugün"
+              - option "Bolu'da Bugün"
+              - option "Burdur'da Bugün"
+              - option "Bursa'da Bugün"
+              - option "Çanakkale'de Bugün"
+              - option "Çankırı'da Bugün"
+              - option "Çorum'da Bugün"
+              - option "Denizli'de Bugün"
+              - option "Diyarbakır'da Bugün"
+              - option "Düzce'de Bugün"
+              - option "Edirne'de Bugün"
+              - option "Elazığ'da Bugün"
+              - option "Erzincan'da Bugün"
+              - option "Erzurum'da Bugün"
+              - option "Eskişehir'de Bugün"
+              - option "Gaziantep'te Bugün"
+              - option "Giresun'da Bugün"
+              - option "Gümüşhane'de Bugün"
+              - option "Hakkari'de Bugün"
+              - option "Hatay'da Bugün"
+              - option "Iğdır'da Bugün"
+              - option "Isparta'da Bugün"
+              - option "İstanbul'da Bugün"
+              - option "İzmir'de Bugün"
+              - option "Kahramanmaraş'ta Bugün"
+              - option "Karabük'te Bugün"
+              - option "Karaman'da Bugün"
+              - option "Kars'ta Bugün"
+              - option "Kastamonu'da Bugün"
+              - option "Kayseri'de Bugün"
+              - option "Kırıkkale'de Bugün"
+              - option "Kırklareli'de Bugün"
+              - option "Kırşehir'de Bugün"
+              - option "Kilis'te Bugün"
+              - option "Kocaeli'de Bugün"
+              - option "Konya'da Bugün"
+              - option "Kütahya'da Bugün"
+              - option "Malatya'da Bugün"
+              - option "Manisa'da Bugün"
+              - option "Mardin'de Bugün"
+              - option "Mersin'de Bugün"
+              - option "Muğla'da Bugün"
+              - option "Muş'ta Bugün"
+              - option "Nevşehir'de Bugün"
+              - option "Niğde'de Bugün"
+              - option "Ordu'da Bugün"
+              - option "Osmaniye'de Bugün"
+              - option "Rize'de Bugün"
+              - option "Sakarya'da Bugün"
+              - option "Samsun'da Bugün"
+              - option "Siirt'te Bugün"
+              - option "Sinop'ta Bugün"
+              - option "Sivas'ta Bugün"
+              - option "Şanlıurfa'da Bugün"
+              - option "Şırnak'ta Bugün"
+              - option "Tekirdağ'da Bugün"
+              - option "Tokat'ta Bugün"
+              - option "Trabzon'da Bugün"
+              - option "Tunceli'de Bugün"
+              - option "Uşak'ta Bugün"
+              - option "Van'da Bugün"
+              - option "Yalova'da Bugün"
+              - option "Yozgat'ta Bugün"
+              - option "Zonguldak'ta Bugün"
+            - generic: 
+        - generic [ref=e61]:
+          - img "Banner" [ref=e65]
+          - generic:
+            - generic [ref=e68] [cursor=pointer]: 
+            - generic [ref=e70] [cursor=pointer]: 
+        - text:    500 m 1 km 2 km   +   
+        - generic [ref=e81]:
+          - generic [ref=e82] [cursor=pointer]:
+            - generic [ref=e84]: 
+            - generic [ref=e85]: İlana Bak
+          - generic [ref=e86] [cursor=pointer]:
+            - generic [ref=e88]: 
+            - generic [ref=e89]: Paylaş
+          - generic [ref=e90] [cursor=pointer]:
+            - generic [ref=e92]: 
+            - generic [ref=e93]: Takas
+          - generic [ref=e94] [cursor=pointer]:
+            - generic [ref=e96]: 
+            - generic [ref=e97]: Askıda
+          - generic [ref=e98] [cursor=pointer]:
+            - generic [ref=e100]: 
+            - generic [ref=e101]: İsrafı Önle
+          - generic [ref=e102] [cursor=pointer]:
+            - generic [ref=e104]: 
+            - generic [ref=e105]: Fırsatlar
+          - generic [ref=e106] [cursor=pointer]:
+            - generic [ref=e108]: 
+            - generic [ref=e109]: Toplu
+          - generic [ref=e110] [cursor=pointer]:
+            - generic [ref=e112]: 
+            - generic [ref=e113]: Diğer
+        - generic [ref=e114]:
+          - generic [ref=e115]:
+            - generic [ref=e116]:
+              - heading " Mahalle Pazarı CANLI" [level=2] [ref=e117]:
+                - generic [ref=e118]: 
+                - text: Mahalle Pazarı
+                - generic [ref=e120]: CANLI
+              - paragraph [ref=e121]: Günübirlik ilanlar, taze fırsatlar ve hızlı takaslar burada!
+            - button "+ Ürün Ekle" [ref=e122] [cursor=pointer]:
+              - generic [ref=e123]: +
+              - generic [ref=e124]: Ürün Ekle
+          - generic [ref=e125]:
+            - button "Önceki" [ref=e126] [cursor=pointer]:
+              - generic [ref=e127]: 
+            - generic [ref=e129] [cursor=pointer]:
+              - generic [ref=e131]: 
+              - generic [ref=e132]:
+                - heading "Mahalle Pazarı Boş" [level=4] [ref=e133]
+                - paragraph [ref=e134]: Henüz ürün yok. İlk ürünü siz ekleyin!
+                - generic [ref=e135]:
+                  - text: Ürün Ekle
+                  - generic [ref=e136]: +
+            - button "Sonraki" [ref=e137] [cursor=pointer]:
+              - generic [ref=e138]: 
+        - generic [ref=e139]:
+          - generic [ref=e140]:
+            - heading " Esnaf Vitrini" [level=2] [ref=e141]:
+              - generic [ref=e142]: 
+              - text: Esnaf Vitrini
+            - generic [ref=e143]:
+              - generic [ref=e144] [cursor=pointer]: Vitrine İlan Ver
+              - link "Tümünü Gör " [ref=e145] [cursor=pointer]:
+                - /url: "#"
+                - text: Tümünü Gör
+                - generic [ref=e146]: 
+          - generic [ref=e147]:
+            - button "Önceki" [ref=e148] [cursor=pointer]:
+              - generic [ref=e149]: 
+            - generic [ref=e151] [cursor=pointer]:
+              - generic [ref=e153]: 
+              - generic [ref=e154]:
+                - heading "Esnaf Vitrini" [level=4] [ref=e155]
+                - paragraph [ref=e156]: Ürünlerinizi vitrine ekleyerek daha fazla görüntülenme alın!
+                - generic [ref=e157]:
+                  - text: Vitrine İlan Ver
+                  - generic [ref=e158]: 
+            - button "Sonraki" [ref=e159] [cursor=pointer]:
+              - generic [ref=e160]: 
+        - generic [ref=e161]:
+          - generic [ref=e162]:
+            - heading " Bireysel Vitrin ✨" [level=2] [ref=e163]:
+              - generic [ref=e164]: 
+              - text: Bireysel Vitrin ✨
+            - generic [ref=e165]:
+              - generic [ref=e166] [cursor=pointer]: Vitrine İlan Ver
+              - link "Tümünü Gör " [ref=e167] [cursor=pointer]:
+                - /url: "#"
+                - text: Tümünü Gör
+                - generic [ref=e168]: 
+          - generic [ref=e169]:
+            - button "Önceki" [ref=e170] [cursor=pointer]:
+              - generic [ref=e171]: 
+            - generic [ref=e173] [cursor=pointer]:
+              - generic [ref=e175]: 
+              - generic [ref=e176]:
+                - heading "Bireysel Vitrin" [level=4] [ref=e177]
+                - paragraph [ref=e178]: İlanınızı öne çıkararak daha fazla alıcıya ulaşın!
+                - generic [ref=e179]:
+                  - text: Vitrine İlan Ver
+                  - generic [ref=e180]: 
+            - button "Sonraki" [ref=e181] [cursor=pointer]:
+              - generic [ref=e182]: 
+        - generic [ref=e183]:
+          - heading " Yakındaki Ürünler" [level=2] [ref=e184]:
+            - generic [ref=e185]: 
+            - text: Yakındaki Ürünler
+          - link "Tümünü Gör " [ref=e186] [cursor=pointer]:
+            - /url: "#"
+            - text: Tümünü Gör
+            - generic [ref=e187]: 
+        - generic [ref=e189]:
+          - generic [ref=e190]: 
+          - paragraph [ref=e191]: Aramanızla eşleşen ürün bulunamadı.
+          - button "Filtreleri Temizle" [ref=e192]
+      - text:                                                                      +               + 
+      - navigation [ref=e193]:
+        - link " Keşfet" [ref=e194] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e195]: 
+          - generic [ref=e196]: Keşfet
+        - link " Teklifler" [ref=e197] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e198]: 
+          - generic [ref=e199]: Teklifler
+        - link "+" [ref=e200] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e201]: +
+        - link " Paylaş" [ref=e202] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e203]: 
+          - generic [ref=e204]: Paylaş
+        - link " Mesajlar" [ref=e205] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e206]: 
+          - generic [ref=e207]: Mesajlar
+      - text:                    +  
+    - complementary [ref=e208]:
+      - generic [ref=e209]:
+        - navigation [ref=e210]:
+          - generic [ref=e211] [cursor=pointer]:
+            - generic [ref=e212]: 
+            - generic [ref=e213]: Profilim
+          - generic [ref=e214] [cursor=pointer]:
+            - generic [ref=e215]: 
+            - generic [ref=e216]: İlanlarım
+          - generic [ref=e217] [cursor=pointer]:
+            - generic [ref=e218]: 
+            - generic [ref=e219]: Tekliflerim
+          - generic [ref=e220] [cursor=pointer]:
+            - generic [ref=e221]: 
+            - generic [ref=e222]: Mesajlarım
+        - generic [ref=e223]:
+          - generic [ref=e224] [cursor=pointer]:
+            - generic [ref=e225]:
+              - generic [ref=e226]: 
+              - generic [ref=e227]: Uygulama Özellikleri
+            - generic [ref=e228]: 
+          - generic [ref=e229]:
+            - generic [ref=e230]:
+              - generic [ref=e231]: 
+              - generic [ref=e232]:
+                - heading "Hızlı Nakit ⚡" [level=3] [ref=e233]
+                - paragraph [ref=e234]: Eşyalarını 24 saatte nakde çevir.
+            - generic [ref=e235]:
+              - generic [ref=e236]: 
+              - generic [ref=e237]:
+                - heading "Sürpriz Paket 📦" [level=3] [ref=e238]
+                - paragraph [ref=e239]: İndirimli gıda paketlerini keşfet.
+            - generic [ref=e240]:
+              - generic [ref=e241]: 
+              - generic [ref=e242]:
+                - heading "Esnaf Fırsatları 🏘️" [level=3] [ref=e243]
+                - paragraph [ref=e244]: Mahalle esnafından anlık teklifler.
+            - generic [ref=e245]:
+              - generic [ref=e246]: 
+              - generic [ref=e247]:
+                - heading "Takas Seçeneği 🤝" [level=3] [ref=e248]
+                - paragraph [ref=e249]: Ürünlerini diğerleriyle takas yap.
+            - generic [ref=e250]:
+              - generic [ref=e251]: 
+              - generic [ref=e252]:
+                - heading "Usta & Yardım 🛠️" [level=3] [ref=e253]
+                - paragraph [ref=e254]: Komşularından teknik destek al.
+            - generic [ref=e255]:
+              - generic [ref=e256]: 
+              - generic [ref=e257]:
+                - heading "Paylaş & İyilik Yap 🌱" [level=3] [ref=e258]
+                - paragraph [ref=e259]: Ücretsiz hediye et, paylaş.
+        - generic [ref=e261]:
+          - link "Google Play'den indirin" [ref=e262] [cursor=pointer]:
+            - /url: "#"
+            - img "Google Play'den indirin" [ref=e263]
+          - link "App Store'dan indirin" [ref=e264] [cursor=pointer]:
+            - /url: "#"
+            - img "App Store'dan indirin" [ref=e265]
+  - text:                                                               
+  - generic [ref=e266]:
+    - generic [ref=e267]:
+      - generic [ref=e268]: Selam! Ben **Pusula**, senin Yanımdaki mahalle rehberinim! Yanımdaki dünyasına hoş geldin! 🧭✨
+      - button "Memnun oldum!" [ref=e269] [cursor=pointer]
+    - img "Rehber"
+  - text: 
+```
