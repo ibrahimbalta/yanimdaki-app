@@ -7,7 +7,10 @@
         "test": "vitest",
         "test:unit": "vitest run",
         "test:e2e": "playwright test",
-        "test:ui": "vitest --ui"
+        "test:ui": "vitest --ui",
+        "allure:generate": "allure generate allure-results --clean -o allure-report",
+        "allure:serve": "allure serve allure-results",
+        "allure:open": "allure open allure-report"
     },
     "author": "",
     "license": "ISC",
@@ -20,6 +23,9 @@
     "devDependencies": {
         "@playwright/test": "^1.58.2",
         "@types/node": "^25.2.3",
+        "allure-commandline": "^2.36.0",
+        "allure-playwright": "^3.4.5",
+        "allure-vitest": "^3.4.5",
         "happy-dom": "^20.6.1",
         "jsdom": "^28.0.0",
         "vitest": "^4.0.18"
