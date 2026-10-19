@@ -1423,7 +1423,7 @@ const app = {
 
         try {
             // TurkiyeAPI - Kapsamlı il/ilçe/mahalle verileri
-            const resp = await fetch('https://turkiyeapi.dev/api/v1/provinces');
+            const resp = await fetch('https://api.turkiyeapi.dev/v1/provinces');
             if (!resp.ok) throw new Error('API hatası');
             const result = await resp.json();
             this.state.trProvinces = result.data || [];
@@ -1470,7 +1470,7 @@ const app = {
 
         try {
             // TurkiyeAPI - İlçeleri çek
-            const resp = await fetch(`https://turkiyeapi.dev/api/v1/provinces/${provinceId}`);
+            const resp = await fetch(`https://api.turkiyeapi.dev/v1/provinces/${provinceId}`);
             if (!resp.ok) throw new Error('İlçe verisi alınamadı');
             const result = await resp.json();
             const districts = result.data?.districts || [];
@@ -1502,7 +1502,7 @@ const app = {
 
         try {
             // TurkiyeAPI - Mahalleleri çek
-            const resp = await fetch(`https://turkiyeapi.dev/api/v1/districts/${districtId}`);
+            const resp = await fetch(`https://api.turkiyeapi.dev/v1/districts/${districtId}`);
             if (!resp.ok) throw new Error('Mahalle verisi alınamadı');
             const result = await resp.json();
             const neighborhoods = result.data?.neighborhoods || [];
@@ -1994,7 +1994,7 @@ const app = {
 
         try {
             if (!this.state.trProvinces) {
-                const resp = await fetch('https://turkiyeapi.dev/api/v1/provinces?limit=82');
+                const resp = await fetch('https://api.turkiyeapi.dev/v1/provinces?limit=82');
                 if (!resp.ok) throw new Error('API hatası: ' + resp.status);
                 const result = await resp.json();
                 let provinces = result.data || [];
@@ -2043,7 +2043,7 @@ const app = {
         }
 
         try {
-            const resp = await fetch(`https://turkiyeapi.dev/api/v1/provinces/${provinceId}`);
+            const resp = await fetch(`https://api.turkiyeapi.dev/v1/provinces/${provinceId}`);
             if (!resp.ok) throw new Error('İlçe verisi alınamadı: ' + resp.status);
             const result = await resp.json();
 
@@ -2077,7 +2077,7 @@ const app = {
         }
 
         try {
-            const resp = await fetch(`https://turkiyeapi.dev/api/v1/districts/${districtId}`);
+            const resp = await fetch(`https://api.turkiyeapi.dev/v1/districts/${districtId}`);
             if (!resp.ok) throw new Error('Mahalle verisi alınamadı: ' + resp.status);
             const result = await resp.json();
 

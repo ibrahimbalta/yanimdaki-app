@@ -1776,7 +1776,7 @@ Object.assign(app, {
         }
 
         try {
-            const resp = await fetch(`https://turkiyeapi.dev/api/v1/provinces/${provinceId}`);
+            const resp = await fetch(`https://api.turkiyeapi.dev/v1/provinces/${provinceId}`);
             if (!resp.ok) throw new Error('İlçe verisi alınamadı');
             const result = await resp.json();
             const districts = result.data.districts || [];
@@ -1805,7 +1805,7 @@ Object.assign(app, {
         }
 
         try {
-            const resp = await fetch(`https://turkiyeapi.dev/api/v1/districts/${districtId}`);
+            const resp = await fetch(`https://api.turkiyeapi.dev/v1/districts/${districtId}`);
             if (!resp.ok) throw new Error('Mahalle verisi alınamadı: ' + resp.status);
             const result = await resp.json();
 
@@ -1834,7 +1834,7 @@ Object.assign(app, {
         if (!citySelect) return;
 
         try {
-            const resp = await fetch('https://turkiyeapi.dev/api/v1/provinces');
+            const resp = await fetch('https://api.turkiyeapi.dev/v1/provinces');
             if (!resp.ok) throw new Error('İl verisi alınamadı');
             const result = await resp.json();
             const provinces = result.data || [];
@@ -2952,7 +2952,7 @@ Object.assign(app, {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-            const resp = await fetch('https://turkiyeapi.dev/api/v1/provinces', { signal: controller.signal });
+            const resp = await fetch('https://api.turkiyeapi.dev/v1/provinces', { signal: controller.signal });
             clearTimeout(timeoutId);
 
             if (!resp.ok) throw new Error('API hatası');
@@ -2998,7 +2998,7 @@ Object.assign(app, {
 
         try {
             // TurkiyeAPI - İlçeleri çek
-            const resp = await fetch(`https://turkiyeapi.dev/api/v1/provinces/${provinceId}`);
+            const resp = await fetch(`https://api.turkiyeapi.dev/v1/provinces/${provinceId}`);
             if (!resp.ok) throw new Error('İlçe verisi alınamadı');
             const result = await resp.json();
             const districts = result.data.districts || [];
@@ -3030,7 +3030,7 @@ Object.assign(app, {
 
         try {
             // TurkiyeAPI - Mahalleleri çek
-            const resp = await fetch(`https://turkiyeapi.dev/api/v1/districts/${districtId}`);
+            const resp = await fetch(`https://api.turkiyeapi.dev/v1/districts/${districtId}`);
             if (!resp.ok) throw new Error('Mahalle verisi alınamadı');
             const result = await resp.json();
             const neighborhoods = result.data.neighborhoods || [];
@@ -3090,7 +3090,7 @@ Object.assign(app, {
         }
 
         try {
-            const resp = await fetch(`https://turkiyeapi.dev/api/v1/provinces/${provinceId}`);
+            const resp = await fetch(`https://api.turkiyeapi.dev/v1/provinces/${provinceId}`);
             if (!resp.ok) throw new Error('İlçe verisi alınamadı');
             const result = await resp.json();
             const districts = result.data.districts || [];
@@ -3128,7 +3128,7 @@ Object.assign(app, {
         }
 
         try {
-            const resp = await fetch(`https://turkiyeapi.dev/api/v1/districts/${districtId}`);
+            const resp = await fetch(`https://api.turkiyeapi.dev/v1/districts/${districtId}`);
             if (!resp.ok) throw new Error('Mahalle verisi alınamadı');
             const result = await resp.json();
             const neighborhoods = result.data.neighborhoods || [];
@@ -3164,69 +3164,6 @@ Object.assign(app, {
             this.state.tempPazarImage = event.target.result;
         };
         reader.readAsDataURL(file);
-    },
-
-    handleAddCityChange: async function () {
-        const provinceId = document.getElementById('add-city').value;
-        const districtSelect = document.getElementById('add-district');
-        const neighborhoodSelect = document.getElementById('add-neighborhood');
-        if (!districtSelect) return;
-
-        districtSelect.innerHTML = '<option value="">Yükleniyor...</option>';
-        neighborhoodSelect.innerHTML = '<option value="">Mahalle Seçin</option>';
-
-        if (provinceId === "") {
-            districtSelect.innerHTML = '<option value="">İlçe Seçin</option>';
-            return;
-        }
-
-        try {
-            const resp = await fetch(`https://turkiyeapi.dev/api/v1/provinces/${provinceId}`);
-            if (!resp.ok) throw new Error('İlçe verisi alınamadı');
-            const result = await resp.json();
-            const districts = result.data.districts || [];
-
-            let html = '<option value="">İlçe Seçin</option>';
-            districts.forEach(dist => {
-                html += `<option value="${dist.id}">${dist.name}</option>`;
-            });
-            districtSelect.innerHTML = html;
-        } catch (e) {
-            console.error('District fetch error:', e);
-            districtSelect.innerHTML = '<option value="">İlçe yüklenemedi</option>';
-        }
-    },
-
-    handleAddDistrictChange: async function () {
-        const districtId = document.getElementById('add-district').value;
-        const neighborhoodSelect = document.getElementById('add-neighborhood');
-        if (!neighborhoodSelect) return;
-
-        neighborhoodSelect.innerHTML = '<option value="">Yükleniyor...</option>';
-
-        if (districtId === "") {
-            neighborhoodSelect.innerHTML = '<option value="">Mahalle Seçin</option>';
-            return;
-        }
-
-        try {
-            const resp = await fetch(`https://turkiyeapi.dev/api/v1/districts/${districtId}`);
-            if (!resp.ok) throw new Error('Mahalle verisi alınamadı');
-            const result = await resp.json();
-            const neighborhoods = result.data.neighborhoods || [];
-            const villages = result.data.villages || [];
-
-            const allLocations = [...neighborhoods, ...villages];
-
-            let html = '<option value="">Mahalle Seçin</option>';
-            allLocations.forEach(loc => {
-                html += `<option value="${loc.name}">${loc.name}</option>`;
-            });
-            neighborhoodSelect.innerHTML = html;
-        } catch (e) {
-            console.error('Neighborhood fetch error:', e);
-            neighborhoodSelect.innerHTML = '<option value="">Mahalle yüklenemedi</option>';
-        }
     },
 
     submitSharePost: async function () {
@@ -3772,7 +3709,7 @@ Object.assign(app, {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-            const resp = await fetch('https://turkiyeapi.dev/api/v1/provinces?limit=82', { signal: controller.signal });
+            const resp = await fetch('https://api.turkiyeapi.dev/v1/provinces?limit=82', { signal: controller.signal });
             clearTimeout(timeoutId);
 
             if (!resp.ok) throw new Error('API hatası: ' + resp.status);
@@ -3827,7 +3764,7 @@ Object.assign(app, {
         }
 
         try {
-            const resp = await fetch(`https://turkiyeapi.dev/api/v1/provinces/${provinceId}`);
+            const resp = await fetch(`https://api.turkiyeapi.dev/v1/provinces/${provinceId}`);
             if (!resp.ok) throw new Error('İlçe verisi alınamadı: ' + resp.status);
             const result = await resp.json();
 
@@ -4025,7 +3962,7 @@ Object.assign(app, {
         }
 
         try {
-            const resp = await fetch(`https://turkiyeapi.dev/api/v1/districts/${districtId}`);
+            const resp = await fetch(`https://api.turkiyeapi.dev/v1/districts/${districtId}`);
             if (!resp.ok) throw new Error('Mahalle verisi alınamadı: ' + resp.status);
             const result = await resp.json();
 
@@ -5665,7 +5602,7 @@ Object.assign(app, {
         }
 
         try {
-            const resp = await fetch(`https://turkiyeapi.dev/api/v1/provinces/${provinceId}`);
+            const resp = await fetch(`https://api.turkiyeapi.dev/v1/provinces/${provinceId}`);
             if (!resp.ok) throw new Error('İlçe verisi alınamadı');
             const result = await resp.json();
             const districts = result.data.districts || [];
@@ -5694,7 +5631,7 @@ Object.assign(app, {
         }
 
         try {
-            const resp = await fetch(`https://turkiyeapi.dev/api/v1/districts/${districtId}`);
+            const resp = await fetch(`https://api.turkiyeapi.dev/v1/districts/${districtId}`);
             if (!resp.ok) throw new Error('Mahalle verisi alınamadı');
             const result = await resp.json();
             const neighborhoods = result.data.neighborhoods || [];
@@ -6892,7 +6829,7 @@ Object.assign(app, {
             if (neighborhoodGroup) neighborhoodGroup.style.display = 'none';
 
             try {
-                const resp = await fetch(`https://turkiyeapi.dev/api/v1/provinces/${cityId}`);
+                const resp = await fetch(`https://api.turkiyeapi.dev/v1/provinces/${cityId}`);
                 if (!resp.ok) throw new Error('İlçe verisi alınamadı');
                 const result = await resp.json();
                 const districts = result.data.districts || [];
@@ -6925,7 +6862,7 @@ Object.assign(app, {
             if (neighborhoodGroup) neighborhoodGroup.style.display = 'block';
             if (neighborhoodSelect) neighborhoodSelect.innerHTML = '<option value="all">Yükleniyor...</option>';
             try {
-                const resp = await fetch(`https://turkiyeapi.dev/api/v1/districts/${districtId}`);
+                const resp = await fetch(`https://api.turkiyeapi.dev/v1/districts/${districtId}`);
                 if (!resp.ok) throw new Error('Mahalle verisi alınamadı');
                 const result = await resp.json();
                 const neighborhoods = result.data.neighborhoods || [];
