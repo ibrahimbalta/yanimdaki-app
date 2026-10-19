@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yanimdaki-cache-v3.2.0';
+const CACHE_NAME = 'yanimdaki-cache-v3.3.0';
 const assets = [
     '/',
     '/index.html',
@@ -14,7 +14,7 @@ self.addEventListener('install', event => {
     self.skipWaiting(); // Yeni versiyonu anında aktif et
     event.waitUntil(
         caches.open(CACHE_NAME).then(cache => {
-            cache.addAll(assets);
+            return cache.addAll(assets);
         })
     );
 });
@@ -26,11 +26,35 @@ self.addEventListener('activate', event => {
                 keys.filter(key => key !== CACHE_NAME)
                     .map(key => caches.delete(key))
             );
-        })
+        }).then(() => self.clients.claim())
     );
 });
 
 self.addEventListener('fetch', event => {
+    // CSS, JS, HTML gibi kritik dosyalarda daima Network First kullan:
+    const url = new URL(event.request.url);
+    const isStaticAsset = url.pathname.endsWith('.css') || 
+                          url.pathname.endsWith('.js') || 
+                          url.pathname.endsWith('.html') || 
+                          event.request.mode === 'navigate';
+
+    if (isStaticAsset && event.request.method === 'GET') {
+        event.respondWith(
+            fetch(event.request)
+                .then(networkResponse => {
+                    if (networkResponse && networkResponse.status === 200) {
+                        const responseClone = networkResponse.clone();
+                        caches.open(CACHE_NAME).then(cache => {
+                            cache.put(event.request, responseClone);
+                        });
+                    }
+                    return networkResponse;
+                })
+                .catch(() => caches.match(event.request))
+        );
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request).then(response => {
             return response || fetch(event.request);
