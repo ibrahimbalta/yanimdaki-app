@@ -67,6 +67,7 @@ Object.assign(window.app, {
             const product = this.state.products.find(p => p.id === c.productId);
             const chatKey = `${c.productId || 'general'}_${otherPhoneNorm}`;
 
+            const isBlocked = (this.state.user && this.state.user.blockedUsers) ? this.state.user.blockedUsers.includes(otherPhoneNorm) : false;
             const timeStr = c.createdAt ? (c.createdAt.toDate ? c.createdAt.toDate() : new Date(c.createdAt)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '...';
 
             return `
@@ -75,7 +76,10 @@ Object.assign(window.app, {
                         style="padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer;">
                         <div style="width: 50px; height: 50px; border-radius: 12px; background: url('${product ? this.utils.getProductImage(product) : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23e2e8f0' width='200' height='200'/%3E%3C/svg%3E"}') center/cover; flex-shrink: 0;"></div>
                         <div style="flex: 1; overflow: hidden;">
-                            <div style="font-weight: 700; font-size: 0.95rem;">${this.utils.escapeHTML(otherName)}</div>
+                            <div style="font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
+                                ${this.utils.escapeHTML(otherName)}
+                                ${isBlocked ? '<span style="font-size: 0.65rem; background: #fee2e2; color: #ef4444; padding: 2px 6px; border-radius: 6px; font-weight: 700;">Engellendi</span>' : ''}
+                            </div>
                             <div style="font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${this.utils.escapeHTML(c.text)}</div>
                             <div style="font-size: 0.65rem; color: var(--primary); font-weight: 700; margin-top: 2px;">
                                 <i class="fas fa-shopping-bag"></i> ${this.utils.escapeHTML((product && product.title) || 'İlan Hakkında')}
@@ -151,6 +155,15 @@ Object.assign(window.app, {
         const myPhoneNorm = this.utils.normalizePhone(this.state.user.phone);
         const otherPhoneNorm = this.utils.normalizePhone(this.currentChat.otherPhone);
 
+        // Engellenen kullanıcı kontrolü ve arayüz güncellemesi
+        const isBlocked = (this.state.user.blockedUsers || []).includes(otherPhoneNorm);
+        const blockedBanner = document.getElementById('chat-blocked-banner');
+        const inputWrap = document.getElementById('chat-input-wrapper');
+        const dropdown = document.getElementById('chat-header-dropdown');
+        if (dropdown) dropdown.style.display = 'none';
+        if (blockedBanner) blockedBanner.style.display = isBlocked ? 'block' : 'none';
+        if (inputWrap) inputWrap.style.display = isBlocked ? 'none' : 'flex';
+
         const messages = this.state.chats.filter(c =>
             c.productId === this.currentChat.productId &&
             ((this.utils.normalizePhone(c.buyerPhone) === myPhoneNorm && this.utils.normalizePhone(c.sellerPhone) === otherPhoneNorm) ||
@@ -204,6 +217,12 @@ Object.assign(window.app, {
         if (!this.currentChat.otherPhone) {
             console.error('[sendMessage] otherPhone is missing!', this.currentChat);
             return this.toast('Alıcı bilgisi bulunamadı.', 'error');
+        }
+
+        // Engellenen kullanıcı kontrolü
+        const otherPhoneNorm = this.utils.normalizePhone(this.currentChat.otherPhone);
+        if ((this.state.user.blockedUsers || []).includes(otherPhoneNorm)) {
+            return this.toast('Bu kullanıcıyı engellediniz. Mesaj göndermek için önce engeli kaldırın.', 'error');
         }
 
         // Debug log
@@ -287,4 +306,128 @@ Object.assign(window.app, {
             console.error('Internal message error:', err);
         }
     },
+
+    toggleChatMenu: function () {
+        const dropdown = document.getElementById('chat-header-dropdown');
+        if (dropdown) {
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+    },
+
+    blockCurrentChatUser: async function () {
+        const dropdown = document.getElementById('chat-header-dropdown');
+        if (dropdown) dropdown.style.display = 'none';
+
+        if (!this.currentChat || !this.currentChat.otherPhone) return;
+        const otherName = this.currentChat.otherName || 'Bu kullanıcı';
+        const otherPhoneNorm = this.utils.normalizePhone(this.currentChat.otherPhone);
+
+        if (!confirm(`${otherName} adlı kullanıcıyı engellemek istediğinize emin misiniz? Engellendiğinde bu kullanıcı size mesaj gönderemez.`)) {
+            return;
+        }
+
+        try {
+            if (!this.state.user.blockedUsers) this.state.user.blockedUsers = [];
+            if (!this.state.user.blockedUsers.includes(otherPhoneNorm)) {
+                this.state.user.blockedUsers.push(otherPhoneNorm);
+            }
+
+            if (this.state.user.uid) {
+                await db.collection('users').doc(this.state.user.uid).update({
+                    blockedUsers: this.state.user.blockedUsers
+                });
+            }
+
+            this.toast(`${otherName} engellendi.`);
+            this.renderChatWindow();
+            if (this.renderMessages) this.renderMessages();
+        } catch (e) {
+            console.error('Error blocking user:', e);
+            this.toast('Engelleme işlemi sırasında hata oluştu.', 'error');
+        }
+    },
+
+    unblockCurrentChatUser: async function () {
+        if (!this.currentChat || !this.currentChat.otherPhone) return;
+        await this.unblockUser(this.currentChat.otherPhone);
+        this.renderChatWindow();
+    },
+
+    unblockUser: async function (phoneToUnblock) {
+        if (!phoneToUnblock) return;
+        const targetNorm = this.utils.normalizePhone(phoneToUnblock);
+        try {
+            if (this.state.user && this.state.user.blockedUsers) {
+                this.state.user.blockedUsers = this.state.user.blockedUsers.filter(p => this.utils.normalizePhone(p) !== targetNorm);
+                if (this.state.user.uid) {
+                    await db.collection('users').doc(this.state.user.uid).update({
+                        blockedUsers: this.state.user.blockedUsers
+                    });
+                }
+            }
+            this.toast('Kullanıcının engeli kaldırıldı.');
+            this.renderBlockedUsersList();
+            if (this.renderMessages) this.renderMessages();
+        } catch (e) {
+            console.error('Error unblocking user:', e);
+            this.toast('Engel kaldırılamadı.', 'error');
+        }
+    },
+
+    reportCurrentChatUser: function () {
+        const dropdown = document.getElementById('chat-header-dropdown');
+        if (dropdown) dropdown.style.display = 'none';
+
+        if (!this.currentChat) return;
+        if (this.openReportModal) {
+            this.openReportModal(this.currentChat.productId || null);
+        } else {
+            alert('Şikayetiniz moderasyon ekibimize iletildi.');
+        }
+    },
+
+    openBlockedUsersModal: function () {
+        const modal = document.getElementById('modal-blocked-users');
+        if (!modal) return;
+        this.renderBlockedUsersList();
+        modal.style.display = 'flex';
+    },
+
+    closeBlockedUsersModal: function () {
+        const modal = document.getElementById('modal-blocked-users');
+        if (modal) modal.style.display = 'none';
+    },
+
+    renderBlockedUsersList: function () {
+        const container = document.getElementById('blocked-users-list');
+        if (!container) return;
+
+        const blocked = (this.state.user && this.state.user.blockedUsers) ? this.state.user.blockedUsers : [];
+        if (blocked.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 30px 10px; color: var(--text-muted); font-size: 0.9rem;">
+                    <i class="fas fa-user-check" style="font-size: 2.2rem; color: #10b981; margin-bottom: 10px; display: block;"></i>
+                    Engellediğiniz herhangi bir kullanıcı bulunmuyor.
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = blocked.map(phone => `
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 36px; height: 36px; border-radius: 50%; background: #fee2e2; color: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;">
+                        <i class="fas fa-user-slash"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 0.85rem; color: var(--text-main);">${this.utils.escapeHTML(phone)}</div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">Engellenen Kullanıcı</div>
+                    </div>
+                </div>
+                <button onclick="app.unblockUser('${phone}')" style="padding: 6px 12px; background: #f1f5f9; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.75rem; font-weight: 700; color: #475569; cursor: pointer;">
+                    Engeli Kaldır
+                </button>
+            </div>
+        `).join('');
+    }
 });

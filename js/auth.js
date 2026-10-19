@@ -204,6 +204,52 @@ Object.assign(window.app, {
         auth.signOut().then(() => this.toast('Çıkış yapıldı.'));
     },
 
+    deleteAccount: async function () {
+        const user = auth.currentUser;
+        if (!user) {
+            return this.toast('Giriş yapmış bir kullanıcı bulunamadı.', 'error');
+        }
+
+        const confirmMsg = "Hesabınızı ve hesabınıza ait tüm ilanları, teklifleri ve verileri kalıcı olarak silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz!";
+        if (!confirm(confirmMsg)) return;
+
+        try {
+            this.toast('Hesabınız ve verileriniz siliniyor...', 'info');
+
+            // 1. Kullanıcının ilanlarını sil
+            if (typeof db !== 'undefined') {
+                const productsSnap = await db.collection('products').where('userId', '==', user.uid).get();
+                const batch = db.batch();
+                productsSnap.forEach(doc => {
+                    batch.delete(doc.ref);
+                });
+                await batch.commit();
+
+                // 2. Kullanıcının profil dökümanını sil
+                await db.collection('users').doc(user.uid).delete();
+            }
+
+            // 3. Firebase Auth hesabını sil
+            await user.delete();
+
+            // 4. Temizlik ve çıkış
+            Object.values(this.subscriptions || {}).forEach(unsub => unsub && unsub());
+            this.subscriptions = {};
+            localStorage.clear();
+            sessionStorage.clear();
+
+            alert('Hesabınız ve tüm verileriniz başarıyla silindi.');
+            window.location.reload();
+        } catch (error) {
+            console.error('Account deletion error:', error);
+            if (error.code === 'auth/requires-recent-login') {
+                alert('Güvenliğiniz gereği, hesabınızı silebilmek için lütfen çıkış yapıp tekrar giriş yapın ve ardından bu işlemi tekrarlayın.');
+            } else {
+                this.toast('Hesap silinirken bir hata oluştu: ' + (error.message || error), 'error');
+            }
+        }
+    },
+
     togglePasswordVisibility: function (inputId, iconEl) {
         const input = document.getElementById(inputId);
         if (!input) return;

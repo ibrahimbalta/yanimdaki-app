@@ -1826,9 +1826,19 @@
                             <i class="fas fa-question-circle" style="color: var(--primary);"></i>
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 16px; cursor: pointer;"
+                            onclick="app.openBlockedUsersModal()">
+                            <span style="font-weight: 600;">Engellenen Kullanıcılar</span>
+                            <i class="fas fa-user-slash" style="color: var(--text-muted);"></i>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 16px; cursor: pointer;"
+                            onclick="window.open('privacy.html', '_blank')">
+                            <span style="font-weight: 600;">Gizlilik Politikası & KVKK</span>
+                            <i class="fas fa-shield-halved" style="color: var(--primary);"></i>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 16px; cursor: pointer;"
                             onclick="app.deleteAccount()">
                             <span style="color: var(--accent); font-weight: 600;">Hesabı Sil</span>
-                            <i class="fas fa-chevron-right" style="color: var(--accent);"></i>
+                            <i class="fas fa-trash-can" style="color: var(--accent);"></i>
                         </div>
 
                     </div>
@@ -2654,7 +2664,7 @@
                 <div style="display: flex; flex-direction: column; height: 100vh;">
                     <!-- Chat Header -->
                     <div
-                        style="padding: 16px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+                        style="padding: 16px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 12px; flex-shrink: 0; position: relative;">
                         <button onclick="app.showScreen('messages')"
                             style="border: none; background: transparent; font-size: 1.2rem;"><i
                                 class="fas fa-arrow-left"></i></button>
@@ -2664,6 +2674,20 @@
                                 style="font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">
                                 ...</div>
                         </div>
+                        <div id="chat-header-actions" style="position: relative;">
+                            <button onclick="app.toggleChatMenu()"
+                                style="border: none; background: transparent; font-size: 1.1rem; color: var(--text-muted); padding: 8px; cursor: pointer; border-radius: 8px;">
+                                <i class="fas fa-ellipsis-vertical"></i>
+                            </button>
+                            <div id="chat-header-dropdown" style="display: none; position: absolute; right: 0; top: 100%; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); width: 180px; z-index: 1000; overflow: hidden;">
+                                <div onclick="app.blockCurrentChatUser()" style="padding: 12px 14px; font-size: 0.85rem; font-weight: 700; color: #ef4444; display: flex; align-items: center; gap: 8px; cursor: pointer; border-bottom: 1px solid var(--border-color);">
+                                    <i class="fas fa-user-slash"></i> Kullanıcıyı Engelle
+                                </div>
+                                <div onclick="app.reportCurrentChatUser()" style="padding: 12px 14px; font-size: 0.85rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                    <i class="fas fa-flag"></i> Şikayet Et
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Chat Messages -->
@@ -2672,8 +2696,14 @@
                         <!-- Messages will be injected here -->
                     </div>
 
+                    <!-- Chat Blocked Banner -->
+                    <div id="chat-blocked-banner" style="display: none; padding: 14px 16px; background: #fef2f2; border-top: 1px solid #fee2e2; color: #991b1b; font-size: 0.85rem; font-weight: 700; text-align: center;">
+                        <span>Bu kullanıcıyı engellediniz.</span>
+                        <button onclick="app.unblockCurrentChatUser()" style="margin-left: 8px; background: #dc2626; color: white; border: none; padding: 4px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer;">Engeli Kaldır</button>
+                    </div>
+
                     <!-- Chat Input -->
-                    <div
+                    <div id="chat-input-wrapper"
                         style="padding: 16px; background: var(--bg-card); border-top: 1px solid var(--border-color); display: flex; gap: 12px; align-items: center; flex-shrink: 0;">
                         <input type="text" id="chat-input" placeholder="Mesajınızı yazın..."
                             style="flex: 1; padding: 12px; border: 1px solid var(--border-color); border-radius: 20px; outline: none; font-size: 0.9rem; background: #f1f5f9;">
@@ -3321,6 +3351,24 @@
                     </div>
                 </div>
                 <button class="game-btn-primary" onclick="app.submitReport()">Şikayeti Gönder</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Blocked Users List -->
+    <div id="modal-blocked-users" class="modal-overlay" style="display: none; z-index: 7000;">
+        <div class="modal-content game-modal" style="max-width: 450px;">
+            <div class="modal-header">
+                <h2 class="game-modal-title" style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-user-slash" style="color: #ef4444;"></i> Engellenen Kullanıcılar
+                </h2>
+                <i class="fas fa-times" onclick="app.closeBlockedUsersModal()"
+                    style="cursor: pointer; font-size: 1.5rem; color: var(--text-muted);"></i>
+            </div>
+            <div class="game-modal-body">
+                <div id="blocked-users-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 350px; overflow-y: auto;">
+                    <!-- Injected via JS -->
+                </div>
             </div>
         </div>
     </div>
