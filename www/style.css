@@ -4255,10 +4255,13 @@ html.dark-mode .safe-point-card {
     border-radius: 50%;
 }
 
-/* --- Screen: Share (Mahalle AkÄ±ÅŸÄ±) --- */
+/* --- Screen: Share (Mahalle Akışı) --- */
 #screen-share {
     padding: 24px 20px 100px;
     overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .share-header {
@@ -4277,6 +4280,8 @@ html.dark-mode .safe-point-card {
 
 .share-feed-container {
     max-width: 500px;
+    width: 100%;
+    box-sizing: border-box;
     margin: 0 auto;
 }
 
@@ -8094,11 +8099,15 @@ html.dark-mode .tab-btn-premium.active {
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-color);
     margin-top: 12px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
 }
 
 /* Arama Input Wrapper */
 .share-search-input-wrapper {
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 0;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -8107,6 +8116,7 @@ html.dark-mode .tab-btn-premium.active {
     padding: 10px 14px;
     border: 1px solid var(--border-color);
     transition: all 0.2s ease;
+    box-sizing: border-box;
 }
 
 .share-search-input-wrapper:focus-within {
@@ -8117,10 +8127,13 @@ html.dark-mode .tab-btn-premium.active {
 .share-search-input-wrapper i {
     color: var(--text-muted);
     font-size: 0.95rem;
+    flex-shrink: 0;
 }
 
 .share-search-input-wrapper input {
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
     border: none;
     background: transparent;
     font-size: 0.95rem;
@@ -8130,6 +8143,16 @@ html.dark-mode .tab-btn-premium.active {
 
 .share-search-input-wrapper input::placeholder {
     color: var(--text-muted);
+}
+
+.share-search-input-wrapper .filter-btn-compact {
+    height: 36px;
+    width: 36px;
+    border: none;
+    border-left: 1px solid var(--border-color);
+    padding: 0;
+    margin-left: 2px;
+    flex-shrink: 0;
 }
 
 /* Filtre Toggle Butonu */
@@ -8414,6 +8437,101 @@ html.dark-mode .tab-btn-premium.active {
         margin: 0 auto;
         border-radius: 24px;
         margin-bottom: 20px;
+    }
+}
+
+/* Mobile Responsive Adjustments for Share Search & Filter */
+@media (max-width: 600px) {
+    #screen-share {
+        padding: 16px 12px 100px;
+        overflow-x: hidden;
+    }
+
+    .share-feed-container {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .share-search-bar {
+        padding: 8px 10px;
+        gap: 8px;
+    }
+
+    .share-search-input-wrapper {
+        padding: 8px 10px;
+        gap: 6px;
+        min-width: 0;
+    }
+
+    .share-search-input-wrapper input {
+        font-size: 0.88rem;
+        min-width: 0;
+    }
+
+    .share-search-input-wrapper .filter-btn-compact,
+    #share-search-alert-btn.filter-btn-compact {
+        width: 32px;
+        height: 32px;
+        flex-shrink: 0;
+        padding: 0;
+        font-size: 0.9rem;
+    }
+
+    .share-filter-toggle-btn {
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+        border-radius: 10px;
+    }
+
+    .share-filter-modal-sheet {
+        border-radius: 20px 20px 0 0;
+    }
+
+    .share-filter-modal-header {
+        padding: 16px 18px;
+    }
+
+    .share-filter-modal-body {
+        padding: 16px 18px;
+    }
+
+    .share-filter-modal-footer {
+        padding: 16px 18px;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 360px) {
+    #screen-share {
+        padding: 14px 10px 100px;
+    }
+
+    .share-search-bar {
+        padding: 6px 8px;
+        gap: 6px;
+    }
+
+    .share-search-input-wrapper {
+        padding: 6px 8px;
+        gap: 4px;
+    }
+
+    .share-search-input-wrapper input {
+        font-size: 0.82rem;
+    }
+
+    .share-search-input-wrapper .filter-btn-compact,
+    #share-search-alert-btn.filter-btn-compact {
+        width: 28px;
+        height: 28px;
+        font-size: 0.82rem;
+    }
+
+    .share-filter-toggle-btn {
+        width: 36px;
+        height: 36px;
     }
 }
 
