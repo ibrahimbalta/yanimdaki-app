@@ -4094,7 +4094,18 @@
     <script>
         app.init();
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
+            const APP_VER = '3.3.0';
+            if (localStorage.getItem('yanimdaki_cache_ver') !== APP_VER) {
+                localStorage.setItem('yanimdaki_cache_ver', APP_VER);
+                if ('caches' in window) {
+                    caches.keys().then(keys => {
+                        keys.forEach(k => caches.delete(k));
+                    });
+                }
+            }
+            navigator.serviceWorker.register('sw.js?v=' + APP_VER).then(reg => {
+                reg.update();
+            });
         }
     </script>
     <!-- Modal: Quick Add to Mahalle Pazarı -->
