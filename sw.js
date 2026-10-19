@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yanimdaki-cache-v3.3.0';
+const CACHE_NAME = 'yanimdaki-cache-v3.4.0';
 const assets = [
     '/',
     '/index.html',

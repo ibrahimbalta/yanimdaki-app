@@ -5,6 +5,16 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**",
+      "android/**",
+      "allure-results/**",
+      "allure-report/**",
+      "playwright-report/**",
+      "test-results/**",
+      "cloud-reports/**",
+      "tests/**",
+      "scripts/**",
+      "**/*.exe",
+      "**/*.apk",
       "firebase.exe",
       "firebase_v2.exe",
       "node.exe",
@@ -15,6 +25,26 @@
       {
         "source": "**",
         "destination": "/app.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/sw.js",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, must-revalidate"
+          }
+        ]
       }
     ]
   }
