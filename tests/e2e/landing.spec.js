@@ -11,13 +11,14 @@ test.describe('Landing Page (index.html)', () => {
     });
 
     test('logo veya marka ismi gorunur', async ({ page }) => {
-        // Logo img veya text olarak bulunabilir
-        const logoOrBrand = page.locator('img[src*="logo"], img[alt*="logo" i], :text("Yanımdaki")').first();
-        await expect(logoOrBrand).toBeVisible();
+        // Yeni tasarimda .logo-text-new kullaniliyor
+        const logo = page.locator('.logo, .logo-text-new').first();
+        await expect(logo).toBeVisible();
     });
 
     test('hero bolumu gorunur', async ({ page }) => {
-        const hero = page.locator('.hero-section, .hero, [class*="hero"]').first();
+        // Yeni tasarimda .hero-slider veya banner kullaniliyor
+        const hero = page.locator('#hero-slider, .hero-slider, .banner-slider-container').first();
         await expect(hero).toBeVisible();
     });
 

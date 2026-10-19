@@ -1,0 +1,106 @@
+[
+  {
+    "timestamp": "2026-02-10T10:00:00.000Z",
+    "type": "batch",
+    "file": null,
+    "status": "passed",
+    "version": "v1.0.0",
+    "duration": "120s"
+  },
+  {
+    "timestamp": "2026-02-11T12:00:00.000Z",
+    "type": "batch",
+    "file": null,
+    "status": "passed",
+    "version": "v1.0.0",
+    "duration": "115s"
+  },
+  {
+    "timestamp": "2026-02-11T14:00:00.000Z",
+    "type": "batch",
+    "file": null,
+    "status": "failed",
+    "version": "v1.0.0",
+    "duration": "110s"
+  },
+  {
+    "timestamp": "2026-02-12T09:00:00.000Z",
+    "type": "batch",
+    "file": null,
+    "status": "passed",
+    "version": "v1.0.0",
+    "duration": "125s"
+  },
+  {
+    "timestamp": "2026-02-13T20:51:41.490Z",
+    "type": "batch",
+    "file": null,
+    "status": "in-progress",
+    "version": "v1.0.0",
+    "duration": "not-measured"
+  },
+  {
+    "timestamp": "2026-02-14T10:00:00.000Z",
+    "type": "batch",
+    "file": null,
+    "status": "passed",
+    "version": "v1.0.1",
+    "duration": "130s"
+  },
+  {
+    "timestamp": "2026-02-14T11:08:49.375Z",
+    "type": "batch",
+    "file": null,
+    "status": "failed",
+    "version": "v1.0.0",
+    "duration": "not-measured"
+  },
+  {
+    "timestamp": "2026-02-14T12:23:09.182Z",
+    "type": "batch",
+    "file": null,
+    "status": "failed",
+    "version": "v1.0.0",
+    "duration": "not-measured"
+  },
+  {
+    "timestamp": "2026-02-14T12:23:09.192Z",
+    "type": "batch",
+    "file": null,
+    "status": "failed",
+    "version": "v1.0.0",
+    "duration": "not-measured"
+  },
+  {
+    "timestamp": "2026-02-14T12:23:09.194Z",
+    "type": "batch",
+    "file": null,
+    "status": "failed",
+    "version": "v1.0.0",
+    "duration": "not-measured"
+  },
+  {
+    "timestamp": "2026-02-14T12:23:09.340Z",
+    "type": "batch",
+    "file": null,
+    "status": "failed",
+    "version": "v1.0.0",
+    "duration": "not-measured"
+  },
+  {
+    "timestamp": "2026-02-14T12:23:09.357Z",
+    "type": "batch",
+    "file": null,
+    "status": "failed",
+    "version": "v1.0.0",
+    "duration": "not-measured"
+  },
+  {
+    "timestamp": "2026-04-14T09:10:43.586Z",
+    "type": "batch",
+    "file": null,
+    "status": "failed",
+    "version": "v1.0.0",
+    "duration": "not-measured"
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "currentVersion": "v1.0.0",
+  "environments": {
+    "local": "http://localhost:3000",
+    "staging": "https://staging.yanimdaki-app.com",
+    "production": "https://yanimdaki-app.com"
+  },
+  "activeEnv": "production",
+  "integrations": {
+    "slack": {
+      "webhook": "",
+      "enabled": false
+    },
+    "jira": {
+      "host": "",
+      "project": "",
+      "enabled": false
+    }
+  }
+}

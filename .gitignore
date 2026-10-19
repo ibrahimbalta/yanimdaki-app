@@ -7,6 +7,9 @@ android/
 ios/
 test-results/
 playwright-report/
+allure-results/
+allure-report/
+cloud-reports/
 blob-report/
 playwright/.cache/
 *.log

@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "scenario": "Giriş Ekranı ve Logo Kontrolü",
+    "type": "e2e",
+    "fileName": "tests/e2e/landing.spec.js",
+    "createdAt": "2026-02-12T14:00:00.000Z",
+    "lastStatus": "success",
+    "lastRunAt": "2026-02-12T18:53:11.773Z"
+  },
+  {
+    "id": 2,
+    "scenario": "Kullanıcı Kayıt ve Giriş Akışı",
+    "type": "e2e",
+    "fileName": "tests/e2e/auth-flow.spec.js",
+    "createdAt": "2026-02-12T14:00:00.000Z",
+    "lastStatus": "pending"
+  },
+  {
+    "id": 3,
+    "scenario": "Ana Sayfa Navigasyon ve Ekranlar",
+    "type": "e2e",
+    "fileName": "tests/e2e/app-navigation.spec.js",
+    "createdAt": "2026-02-12T14:00:00.000Z",
+    "lastStatus": "success",
+    "lastRunAt": "2026-02-12T18:55:15.892Z"
+  },
+  {
+    "id": 4,
+    "scenario": "UI Bileşenleri (Kategoriler, Sidebar, Toast)",
+    "type": "e2e",
+    "fileName": "tests/e2e/ui-components.spec.js",
+    "createdAt": "2026-02-12T14:00:00.000Z",
+    "lastStatus": "pending"
+  },
+  {
+    "id": 5,
+    "scenario": "Duyarlı Tasarım (Mobil/Tablet/Masaüstü)",
+    "type": "e2e",
+    "fileName": "tests/e2e/responsive.spec.js",
+    "createdAt": "2026-02-12T14:00:00.000Z",
+    "lastStatus": "pending"
+  },
+  {
+    "id": 6,
+    "scenario": "Admin Paneli Fonksiyonları",
+    "type": "e2e",
+    "fileName": "tests/e2e/admin.spec.js",
+    "createdAt": "2026-02-12T14:00:00.000Z",
+    "lastStatus": "pending"
+  }
+]

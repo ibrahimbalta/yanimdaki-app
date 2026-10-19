@@ -9,10 +9,19 @@ export default defineConfig({
     timeout: 30000,
     reporter: [['html'], ['allure-playwright', { outputFolder: 'allure-results' }]],
     use: {
-        baseURL: 'http://localhost:5173',
+        baseURL: process.env.BASE_URL || 'http://localhost:5173',
         trace: 'on-first-retry',
+        screenshot: 'only-on-failure',
+        video: 'retain-on-failure',
+        viewport: { width: 1280, height: 720 },
     },
-    webServer: {
+    expect: {
+        toHaveScreenshot: {
+            maxDiffPixels: 100,
+            threshold: 0.2,
+        },
+    },
+    webServer: process.env.BASE_URL ? undefined : {
         command: 'npx serve -s . -l 5173',
         port: 5173,
         reuseExistingServer: true,

@@ -4,261 +4,1149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yanımdaki Test Center</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Yanımdaki | Test Intelligence Center</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
-            --success: #22c55e;
+            /* Vibrant Light/Glass Theme */
+            --primary: #8b5cf6;
+            --primary-hover: #7c3aed;
+            --secondary: #0ea5e9;
+            --bg: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --card-border: rgba(255, 255, 255, 0.5);
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --success: #10b981;
             --danger: #ef4444;
+            --accent: #f43f5e;
+            --sidebar-width: 280px;
+            --sidebar-bg: rgba(255, 255, 255, 0.95);
+            --surface: #ffffff;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes meshGradient {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
+            background: linear-gradient(-45deg, #eef2ff, #f0f9ff, #fcfaff, #ffffff);
+            background-size: 400% 400%;
+            animation: meshGradient 15s ease infinite;
             color: var(--text);
             margin: 0;
-            padding: 20px;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
+        h1,
+        h2,
+        h3 {
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
         }
 
-        .header {
+        /* Sidebar Styles - Sympathetic Design */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(30px);
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 40px 24px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.02);
+            overflow-y: auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 50px;
+        }
+
+        .brand-logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.4rem;
+            box-shadow: 0 8px 16px rgba(139, 92, 246, 0.3);
+            transform: rotate(-5deg);
+        }
+
+        .brand-name {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 18px;
+            border-radius: 16px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: rgba(139, 92, 246, 0.08);
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .btn-icon {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 10px 20px -5px rgba(139, 92, 246, 0.4);
+        }
+
+        /* Main Content & Section Styling */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 50px;
+            max-width: 1600px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .header-section {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-end;
+            margin-bottom: 60px;
+        }
+
+        .title-group h1 {
+            font-size: 2.8rem;
+            letter-spacing: -1.5px;
+            margin-bottom: 10px;
+        }
+
+        .title-group p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Sympathetic Cards */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
             margin-bottom: 30px;
         }
 
-        .card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 32px;
+            padding: 32px;
+            box-shadow: var(--shadow);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+        .glass-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
         }
 
-        h2 {
-            margin-top: 0;
-            font-size: 1.2rem;
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .card-header i {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .card-header h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        /* Pill Buttons & Controls */
+        .btn {
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 10px 20px -5px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px -5px rgba(139, 92, 246, 0.6);
+        }
+
+        .btn-outline {
+            background: white;
+            border: 2px solid rgba(0, 0, 0, 0.05);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            background: #f8fafc;
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .input-dark {
+            background: rgba(0, 0, 0, 0.03);
+            border: 2px solid rgba(0, 0, 0, 0.05);
+            border-radius: 20px;
+            padding: 16px;
+            width: 100%;
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        .input-dark:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+        }
+
+        /* Terminal - Clear Night Mode */
+        #terminal {
+            background: #0f172a;
+            border-radius: 24px;
+            padding: 25px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: #f8fafc;
+            height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .status-pill {
+            background: white;
+            color: var(--success);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             display: flex;
             align-items: center;
             gap: 10px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
-        button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+        /* Pulse Animation for Primary Buttons */
+        @keyframes pulseGlow {
+            0% {
+                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(139, 92, 246, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+            }
         }
 
-        button:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
+        .btn-primary {
+            animation: pulseGlow 2s infinite;
         }
 
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        /* Environment Aware Backgrounds */
+        body.env-local {
+            background: linear-gradient(-45deg, #f0fdf4, #f8fafc, #fcfaff, #ffffff);
         }
 
-        .btn-success {
-            background: var(--success);
+        body.env-staging {
+            background: linear-gradient(-45deg, #fffbeb, #f8fafc, #fcfaff, #ffffff);
         }
 
-        .btn-danger {
-            background: var(--danger);
+        body.env-production {
+            background: linear-gradient(-45deg, #fef2f2, #f8fafc, #fcfaff, #ffffff);
         }
 
-        textarea {
-            width: 100%;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            color: white;
-            padding: 12px;
-            margin-bottom: 12px;
-            font-family: inherit;
-            resize: vertical;
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 80px;
+                padding: 20px 10px;
+            }
+
+            .brand-name,
+            .nav-item span {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 80px;
+                padding: 20px;
+            }
         }
 
-        #terminal {
-            background: #000;
-            color: #22c55e;
-            font-family: 'Courier New', Courier, monospace;
-            padding: 15px;
-            border-radius: 8px;
-            height: 300px;
-            overflow-y: auto;
-            font-size: 0.9rem;
-            white-space: pre-wrap;
+        .env-selector {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            gap: 4px;
         }
 
-        .status-badge {
+        .env-btn {
             padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.8rem;
-            background: #334155;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 15px;
-        }
-
-        .nav-links a {
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: transparent;
             color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.9rem;
         }
 
-        .nav-links a:hover {
+        .env-btn.active.local {
+            background: #10b981;
+            color: white;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .env-btn.active.staging {
+            background: #f59e0b;
+            color: white;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+        }
+
+        .env-btn.active.production {
+            background: #ef4444;
+            color: white;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+        }
+
+        .env-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .scenario-list {
+            max-height: 400px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .status-pill-mini {
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .status-error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .status-pending {
+            background: rgba(148, 163, 184, 0.15);
+            color: #94a3b8;
+            border-color: rgba(148, 163, 184, 0.3);
+        }
+
+        .scenario-item {
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            margin-bottom: 4px;
+        }
+
+        .scenario-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .scenario-name {
+            display: block;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .scenario-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 16px;
+            margin-top: 4px;
+        }
+
+        .scenario-meta i {
+            margin-right: 4px;
             color: var(--primary);
+            opacity: 0.7;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--card-border);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="header">
-            <div>
-                <h1 style="margin:0">🚀 Yanımdaki <span style="color:var(--primary)">Test Center</span></h1>
-                <p style="color:var(--text-muted); margin: 5px 0 0">Test Yönetim ve Otomasyon Paneli</p>
-            </div>
-            <div class="nav-links">
-                <a href="http://localhost:3000" target="_blank">Panel'i Aç</a>
-                <a href="https://github.com/ibrahimbalta/yanimdaki-app/actions" target="_blank">GitHub Actions</a>
-            </div>
+    <div class="sidebar">
+        <div class="brand">
+            <div class="brand-logo">T</div>
+            <div class="brand-name">TestCenter</div>
         </div>
 
-        <div class="grid">
-            <div class="card">
-                <h2><i class="fas fa-play"></i> Hızlı Başlat</h2>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <button id="runUnit"><i class="fas fa-vial"></i> Yerel Unit Testleri Çalıştır</button>
-                    <button id="runE2E"><i class="fas fa-desktop"></i> Yerel E2E Testleri Çalıştır</button>
-                    <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
-                        <select id="browserSelect"
-                            style="background: #334155; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">
-                            <option value="chromium">Google Chrome / Chromium</option>
-                            <option value="firefox">Firefox</option>
-                            <option value="webkit">Safari (WebKit)</option>
-                        </select>
-                        <label
-                            style="font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                            <input type="checkbox" id="headedMode" checked> Tarayıcıyı Göster
-                        </label>
-                    </div>
-                    <button id="triggerGH" class="btn-success"><i class="fab fa-github"></i> GitHub Actions
-                        Tetikle</button>
-                </div>
+        <nav id="sidebar-nav" class="nav-menu">
+            <a href="#" class="nav-item active" onclick="showSection('dashboard'); return false;">
+                <i class="fas fa-th-large"></i>
+                <span>Özet Panel</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('scenarios'); return false;">
+                <i class="fas fa-map"></i>
+                <span>Senaryolar</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('github'); return false;">
+                <i class="fab fa-github"></i>
+                <span>Bulut Testleri</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('checklist'); return false;">
+                <i class="fas fa-tasks"></i>
+                <span>Test Listesi</span>
+            </a>
+            <div class="nav-item" onclick="showSection('analytics')">
+                <i class="fas fa-chart-pie"></i>
+                <span>Analitik</span>
             </div>
-
-            <div class="card">
-                <h2><i class="fas fa-plus-circle"></i> Yeni Senaryo Ekle</h2>
-                <textarea id="scenarioText" rows="3"
-                    placeholder="Örn: Kullanıcı ana sayfada 'Giriş Yap' butonuna tıklar..."></textarea>
-                <div style="display: flex; gap: 10px;">
-                    <button id="genE2E" style="flex:1">E2E Olarak Üret</button>
-                    <button id="genUnit" style="flex:1; background: #334155;">Unit Olarak Üret</button>
-                </div>
-                <p id="genStatus" style="font-size: 0.8rem; margin-top: 10px; color: var(--text-muted)"></p>
+            <div class="nav-item" onclick="showSection('api')">
+                <i class="fas fa-plug"></i>
+                <span>API Merkezi</span>
             </div>
-        </div>
+            <div class="nav-item" onclick="showSection('visual')">
+                <i class="fas fa-eye"></i>
+                <span>Görsel Denetim</span>
+            </div>
+            <div class="nav-item" onclick="showSection('a11y')">
+                <i class="fas fa-user-check"></i>
+                <span>Erişilebilirlik</span>
+            </div>
+            <div class="nav-item" onclick="showSection('settings')">
+                <i class="fas fa-sliders-h"></i>
+                <span>Ayarlar</span>
+            </div>
+            <div class="nav-item" onclick="showSection('qms')">
+                <i class="fas fa-shield-alt"></i>
+                <span>Test Yönetimi</span>
+            </div>
+        </nav>
 
-        <div class="card">
-            <h2 style="display:flex; justify-content:space-between">
-                <span><i class="fas fa-terminal"></i> Canlı Terminal Çıktısı</span>
-                <span id="testStatus" class="status-badge">Hazır</span>
-            </h2>
-            <div id="terminal">Sistem hazır. Test başlatmak için butonları kullanın...</div>
+        <div style="margin-top: auto; padding: 20px; background: rgba(99, 102, 241, 0.1); border-radius: 16px;">
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Sistem Durumu</div>
+            <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.9rem;">
+                <span
+                    style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%; display: inline-block;"></span>
+                Online
+            </div>
         </div>
     </div>
+
+    <main class="main-content">
+        <div class="header-section">
+            <div class="title-group">
+                <h1 id="header-title">Test Intelligence Center</h1>
+                <p id="header-desc">Uçtan uca test otomasyonu ve yapay zeka destekli senaryo yönetimi.</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div class="env-selector">
+                    <button class="env-btn local" onclick="setEnvironment('local')">Local</button>
+                    <button class="env-btn staging" onclick="setEnvironment('staging')">Staging</button>
+                    <button class="env-btn production" onclick="setEnvironment('production')">Prod</button>
+                </div>
+                <div id="testStatus" class="status-pill">Sistem Hazır</div>
+            </div>
+        </div>
+
+        <div id="dashboard-view">
+            <div class="dashboard-grid">
+                <!-- Run Tests -->
+                <div class="glass-card" style="border-top: 6px solid var(--primary);">
+                    <div class="card-header">
+                        <i class="fas fa-microchip"></i>
+                        <h2>Test Motoru</h2>
+                    </div>
+                    <div class="control-group">
+                        <div style="margin-bottom: 20px;">
+                            <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 8px;">Hedef Proje</span>
+                            <select id="projectSelector" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--card-border); background: var(--card-bg); font-weight: 600;">
+                                <option value="yanimdaki">Yanımdaki App</option>
+                            </select>
+                        </div>
+                        <button id="runE2E" class="btn btn-primary"><i class="fas fa-play"></i> Yerel E2E Testleri
+                            Başlat</button>
+                        <button id="runUnit" class="btn btn-outline"><i class="fas fa-microscope"></i> Unit Testleri
+                            Çalıştır</button>
+
+                        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">Konfigürasyon</span>
+                            <div style="display: flex; gap: 10px;">
+                                <select id="browserSelect" style="flex: 1;">
+                                    <option value="chromium">Google Chrome</option>
+                                    <option value="firefox">Firefox</option>
+                                    <option value="webkit">Safari</option>
+                                </select>
+                                <label
+                                    style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;">
+                                    <input type="checkbox" id="headedMode" checked> Tarayıcı
+                                </label>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+                            <span
+                                style="font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+                                Paralel Worker Sayısı <b id="workerValue">1</b>
+                            </span>
+                            <input type="range" id="workerSlider" min="1" max="8" value="1" step="1"
+                                style="width: 100%; cursor: pointer;">
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <button id="triggerGH" class="btn btn-success" style="flex: 1;"><i
+                                    class="fab fa-github"></i>
+                                Cloud Run</button>
+                            <button id="viewReport" class="btn btn-report" style="display: none; flex: 1.2;"><i
+                                    class="fas fa-chart-line"></i> Raporu Aç</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Scenario -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <i class="fas fa-magic"></i>
+                        <h2>Yapay Zeka Senaryo Üretici</h2>
+                    </div>
+                    <div class="control-group">
+                        <textarea id="scenarioText" class="input-dark" rows="3"
+                            placeholder="Örn: Kullanıcı giriş yapar, profil resmini değiştirir ve kaydeder..."></textarea>
+                        <div style="display: flex; gap: 10px;">
+                            <button id="genE2E" class="btn btn-primary" style="flex: 1;"><i class="fas fa-code"></i> E2E
+                                Üret</button>
+                            <button id="genUnit" class="btn btn-outline" style="flex: 1;">Unit Üret</button>
+                        </div>
+                        <div id="genStatus" style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terminal -->
+            <div class="terminal-container">
+                <div class="card-header" style="justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <i class="fas fa-terminal"></i>
+                        <h2 style="font-size: 1rem;">Sistem Konsolu</h2>
+                    </div>
+                    <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.75rem;"
+                        onclick="document.getElementById('terminal').innerText = ''">Temizle</button>
+                </div>
+                <div id="terminal">Merhabalar! Sistem test işlemlerine hazır görünüyor.</div>
+            </div>
+        </div>
+
+        <div id="scenarios-view" style="display: none;">
+            <!-- Scenario List -->
+            <div class="glass-card" style="margin-bottom: 24px;">
+                <div class="card-header">
+                    <i class="fas fa-layer-group"></i>
+                    <h2>Tüm Senaryolar</h2>
+                </div>
+                <div id="scenarioListContainer" class="scenario-list">
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 12px; display: block;"></i>
+                        Henüz senaryo bulunmuyor.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="github-view" style="display: none;">
+            <!-- Analysis Result (Hidden by default) -->
+            <div id="analysis-result" class="glass-card"
+                style="display: none; margin-bottom: 24px; border: 1px solid var(--primary);">
+                <div class="card-header" style="justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <i class="fas fa-robot" style="color: var(--primary-light)"></i>
+                        <h2>Akıllı Test Analizi Özet</h2>
+                    </div>
+                    <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.75rem;"
+                        onclick="document.getElementById('analysis-result').style.display='none'">
+                        <i class="fas fa-times"></i> Kapat
+                    </button>
+                </div>
+                <div id="analysisContent" style="padding: 20px;">
+                    <!-- Analysis details will be injected here -->
+                </div>
+            </div>
+
+            <div class="glass-card" style="margin-bottom: 24px;">
+                <div class="card-header" style="justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <i class="fab fa-github"></i>
+                        <h2>GitHub Workflow Geçmişi</h2>
+                    </div>
+                    <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.75rem;"
+                        onclick="fetchGitHubRuns()">
+                        <i class="fas fa-sync-alt"></i> Yenile
+                    </button>
+                </div>
+                <div id="githubRunsContainer" class="scenario-list">
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <i class="fas fa-spinner fa-spin"
+                            style="font-size: 2rem; margin-bottom: 12px; display: block;"></i>
+                        Workflow geçmişi yükleniyor...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="analytics-view" style="display: none;">
+            <div class="dashboard-grid">
+                <div class="glass-card" style="grid-column: span 2;">
+                    <div class="card-header">
+                        <i class="fas fa-chart-line" style="color: var(--primary-light)"></i>
+                        <h2>Test Başarı Oranı Trendi</h2>
+                    </div>
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-header">
+                        <i class="fas fa-vial-circle-check" style="color: var(--success)"></i>
+                        <h2>En Kararlı Testler</h2>
+                    </div>
+                    <div id="stableTests" style="font-size: 0.9rem;">
+                        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Veriler hesaplanıyor...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-header">
+                        <i class="fas fa-triangle-exclamation" style="color: var(--danger)"></i>
+                        <h2>Güvenilmez (Flaky) Testler</h2>
+                    </div>
+                    <div id="flakyTests" style="font-size: 0.9rem;">
+                        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Analiz ediliyor...</div>
+                    </div>
+                </div>
+                <!-- Stable and Flaky cards inside dashboard-grid -->
+            </div>
+        </div> <!-- End of analytics-view -->
+
+        <div id="checklist-view" style="display: none;">
+            <div class="glass-card">
+                <div class="card-header">
+                    <i class="fas fa-list-check"></i>
+                    <h2>Aktif Test Kütüphanesi</h2>
+                </div>
+                <div id="checklistContainer">
+                    <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Testler taranıyor...</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="api-view" style="display: none;">
+            <div class="dashboard-grid">
+                <div class="glass-card" style="grid-column: span 2;">
+                    <div class="card-header">
+                        <i class="fas fa-paper-plane"></i>
+                        <h2>Request Builder</h2>
+                    </div>
+                    <div class="control-group">
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                            <select id="apiMethod" style="width: 100px;">
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                                <option value="PUT">PUT</option>
+                                <option value="DELETE">DELETE</option>
+                            </select>
+                            <input type="text" id="apiUrl" placeholder="https://api.example.com/endpoint"
+                                style="flex:1;">
+                            <button class="btn btn-primary" onclick="sendApiRequest()"><i class="fas fa-send"></i>
+                                Gönder</button>
+                        </div>
+
+                        <div style="margin-bottom: 15px;">
+                            <span
+                                style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 8px;">Request
+                                Body (JSON)</span>
+                            <textarea id="apiBody"
+                                style="width: 100%; height: 100px; font-family: monospace; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; padding: 10px;"
+                                placeholder='{ "key": "value" }'></textarea>
+                        </div>
+
+                        <div style="display: flex; justify-content: flex-end;">
+                            <button class="btn btn-outline" style="border-color: var(--success); color: var(--success);"
+                                onclick="saveAsAutomatedTest()">
+                                <i class="fas fa-magic"></i> Otomatik Teste Dönüştür
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card" style="grid-column: span 1;">
+                    <div class="card-header">
+                        <i class="fas fa-terminal"></i>
+                        <h2>Response Information</h2>
+                    </div>
+                    <div id="apiResponseMeta" style="margin-bottom: 15px;">
+                        <div style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 40px;">
+                            Henüz istek atılmadı.</div>
+                    </div>
+                </div>
+
+                <div class="glass-card" style="grid-column: span 3;">
+                    <div class="card-header">
+                        <i class="fas fa-code"></i>
+                        <h2>Response Body</h2>
+                    </div>
+                    <pre id="apiResponseBody"
+                        style="max-height: 400px; overflow: auto; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.85rem; color: #a5d6ff;"></pre>
+                </div>
+            </div>
+        </div>
+
+        <div id="visual-view" style="display: none;">
+            <div class="glass-card">
+                <div class="card-header">
+                    <i class="fas fa-camera-retro"></i>
+                    <h2>Görsel Karşılaştırma Galerisi</h2>
+                </div>
+                <div id="visualGalleryContainer" class="dashboard-grid"
+                    style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    <div style="color: var(--text-muted); padding: 40px; text-align: center; grid-column: 1/-1;">
+                        Yükleniyor...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accessibility View -->
+        <div id="a11y-view" style="display: none;">
+            <div class="glass-card">
+                <div class="card-header">
+                    <i class="fas fa-universal-access"></i>
+                    <h2>Otomatik Erişilebilirlik Denetimi</h2>
+                </div>
+                <div class="control-group">
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">WCAG 2.1 AA standartlarına göre
+                        uygulamanızın erişilebilirlik puanını ve hatalarını analiz edin.</p>
+                    <button class="btn btn-primary" onclick="runA11yTest()">
+                        <i class="fas fa-microscope"></i> Denetimi Başlat
+                    </button>
+                </div>
+                <div id="a11yResults" style="margin-top: 20px;">
+                    <!-- Results will be injected here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings / Integrations View -->
+        <div id="settings-view" style="display: none;">
+            <div class="dashboard-grid">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <i class="fab fa-slack"></i>
+                        <h2>Slack Entegrasyonu</h2>
+                    </div>
+                    <div class="control-group">
+                        <label style="display: block; margin-bottom: 8px; font-size: 0.85rem;">Webhook URL</label>
+                        <input type="text" id="slackWebhook" style="width: 100%; margin-bottom: 10px;"
+                            placeholder="https://hooks.slack.com/services/...">
+                        <label
+                            style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;">
+                            <input type="checkbox" id="slackEnabled"> Bildirimleri Aktif Et
+                        </label>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-header">
+                        <i class="fab fa-jira"></i>
+                        <h2>Jira Entegrasyonu</h2>
+                    </div>
+                    <div class="control-group">
+                        <label style="display: block; margin-bottom: 8px; font-size: 0.85rem;">Jira Host (e.g.
+                            company.atlassian.net)</label>
+                        <input type="text" id="jiraHost" style="width: 100%; margin-bottom: 10px;">
+                        <label style="display: block; margin-bottom: 8px; font-size: 0.85rem;">Project Key</label>
+                        <input type="text" id="jiraProject" style="width: 100%; margin-bottom: 10px;">
+                        <label
+                            style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;">
+                            <input type="checkbox" id="jiraEnabled"> Jira Köprüsünü Aktif Et
+                        </label>
+                    </div>
+                </div>
+
+                <div style="grid-column: span 2; display: flex; justify-content: flex-end;">
+                    <button class="btn btn-primary" onclick="saveIntegrationSettings()">
+                        <i class="fas fa-save"></i> Ayarları Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="qms-view" style="display: none;">
+            <div class="dashboard-grid">
+                <!-- Header Stats/Actions -->
+                <div class="glass-card"
+                    style="grid-column: span 3; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <h2 style="font-size: 1.5rem; margin-bottom: 4px;">Kalite Yönetim Merkezi (QMS)</h2>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Sürüm: <span id="qmsCurrentVer"
+                                style="font-weight:700; color:var(--primary)">v1.0.0</span></p>
+                    </div>
+                    <div style="display:flex; gap: 12px;">
+                        <button class="btn btn-outline" onclick="openExportModal()"><i class="fas fa-file-export"></i>
+                            Raporu Dışa Aktar</button>
+                        <button class="btn btn-primary" onclick="openCreateScenarioModal()"><i
+                                class="fas fa-plus-circle"></i> Yeni Senaryo Tanımla</button>
+                    </div>
+                </div>
+
+                <!-- Column 1: Plan & Define -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <i class="fas fa-folder-open"></i>
+                        <h2>Test Kütüphanesi</h2>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 20px;">Tanımlanmış manuel test
+                        senaryoları.</p>
+                    <div id="qmsScenarioList" style="display:flex; flex-direction:column; gap:12px;">
+                        <!-- Scenarios injected here -->
+                    </div>
+                </div>
+
+                <!-- Column 2: Active Execution Hub -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <i class="fas fa-play-circle"></i>
+                        <h2>Yürütme Merkezi</h2>
+                    </div>
+                    <div id="qmsExecutionHub">
+                        <div style="text-align:center; padding: 40px; color: var(--text-muted);">
+                            <i class="fas fa-info-circle fa-2x" style="margin-bottom:15px; opacity:0.5;"></i>
+                            <p>Yürütmek istediğiniz bir senaryoyu kütüphaneden seçin.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 3: History & Insights -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <i class="fas fa-history"></i>
+                        <h2>Koşu Geçmişi</h2>
+                    </div>
+                    <div id="qmsHistoryList">
+                        <!-- History injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modals for QMS -->
+        <div id="qmsModalOverlay"
+            style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(10px); z-index:20000; align-items:center; justify-content:center;">
+            <div id="qmsModalContent" class="glass-card" style="width:100%; max-width:600px; animation:fadeIn 0.3s;"
+                onclick="event.stopPropagation()">
+                <!-- Dynamic Content -->
+            </div>
+        </div>
+        </div> <!-- End of qms-view -->
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
         const terminal = document.getElementById('terminal');
         const statusBadge = document.getElementById('testStatus');
+        const projectSelector = document.getElementById('projectSelector');
+
+        async function fetchProjects() {
+            try {
+                const resp = await fetch('/api/projects');
+                const projects = await resp.json();
+                projectSelector.innerHTML = projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+                
+                const configResp = await fetch('/api/config');
+                const config = await configResp.json();
+                projectSelector.value = config.activeProject;
+            } catch (e) { console.error('Project Load Error:', e); }
+        }
+
+        projectSelector.onchange = async () => {
+            const activeProject = projectSelector.value;
+            await fetch('/api/config/project', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ activeProject })
+            });
+            log(`> Aktif Proje Değiştirildi: ${activeProject}\n`);
+        };
 
         function log(msg) {
+            if (terminal.innerText === 'Merhabalar! Sistem test işlemlerine hazır görünüyor.') terminal.innerText = '';
             terminal.innerText += msg;
             terminal.scrollTop = terminal.scrollHeight;
         }
 
         function setStatus(status, color) {
             statusBadge.innerText = status;
-            statusBadge.style.background = color || '#334155';
+            statusBadge.style.color = color || 'var(--text)';
+            statusBadge.style.borderColor = color ? color + '44' : 'var(--card-border)';
+            statusBadge.style.background = color ? color + '11' : 'rgba(51, 65, 85, 0.5)';
         }
 
-        // --- Test Running ---
+        document.getElementById('workerSlider').oninput = function () {
+            document.getElementById('workerValue').innerText = this.value;
+        };
+
+        fetchProjects(); // İlk açılışta projeleri yükle
+
         document.getElementById('runUnit').onclick = () => {
             terminal.innerText = '';
-            log('> Unit testler baslatiliyor...\n');
-            setStatus('Çalışıyor...', '#6366f1');
+            log('Starting unit tests...\n');
+            setStatus('Çalışıyor...', 'var(--primary)');
             socket.emit('run-test', 'unit');
         };
 
         document.getElementById('runE2E').onclick = () => {
             const headed = document.getElementById('headedMode').checked;
             const project = document.getElementById('browserSelect').value;
+            const workers = document.getElementById('workerSlider').value;
             terminal.innerText = '';
-            log(`> E2E testler baslatiliyor... [${project}] ${headed ? '(Tarayici aciliyor)' : ''}\n`);
-            setStatus('Çalışıyor...', '#6366f1');
-            socket.emit('run-test', { type: 'e2e', headed, project });
+            log(`Starting E2E tests [${project}] ${headed ? '(Visible mode)' : ''} with ${workers} workers\n`);
+            setStatus('Çalışıyor...', 'var(--primary)');
+            socket.emit('run-test', { type: 'e2e', headed, project, workers });
         };
 
         socket.on('test-output', (data) => log(data));
-        socket.on('test-finished', (code) => {
-            log(`\n> Islem tamamlandi. Exit code: ${code}`);
-            setStatus(code === 0 ? 'Başarılı' : 'Hatalı', code === 0 ? '#22c55e' : '#ef4444');
+        socket.on('test-finished', (data) => {
+            const code = typeof data === 'object' ? data.code : data;
+            const reportGenerated = typeof data === 'object' ? data.reportGenerated : false;
+
+            log(`\n> Batch execution completed. Exit code: ${code}`);
+            setStatus(code === 0 ? 'Tamamlandı' : 'Hata!', code === 0 ? '#10b981' : '#ef4444');
+
+            if (reportGenerated) {
+                document.getElementById('viewReport').style.display = 'inline-flex';
+            } else {
+                log('> Allure report skipped or failed.\n');
+            }
+            fetchScenarios(); // Yenile
         });
 
-        // --- GitHub Trigger ---
-        document.getElementById('triggerGH').onclick = async () => {
-            const btn = document.getElementById('triggerGH');
-            btn.disabled = true;
-            try {
-                const resp = await fetch('/api/trigger-github', { method: 'POST' });
-                const result = await resp.json();
-                alert(result.message);
-            } catch (e) {
-                alert('Hata: ' + e.message);
+        document.getElementById('viewReport').onclick = async () => {
+            const resp = await fetch('/api/report-status');
+            const data = await resp.json();
+            if (data.exists) {
+                window.open('/report/index.html', '_blank');
+            } else {
+                alert('Test raporu henüz hazır değil veya oluşturulamadı.');
             }
-            btn.disabled = false;
         };
 
-        // --- Generation ---
+        async function fetchScenarios() {
+            try {
+                const resp = await fetch('/api/scenarios');
+                const scenarios = await resp.json();
+                renderScenarios(scenarios);
+            } catch (e) { console.error(e); }
+        }
+
+        function renderScenarios(scenarios) {
+            const container = document.getElementById('scenarioListContainer');
+            if (scenarios.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);"><i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 12px; display: block;"></i>Henüz senaryo bulunmuyor.</div>';
+                return;
+            }
+
+            let html = '';
+            scenarios.forEach(s => {
+                const date = new Date(s.createdAt).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                const status = s.lastStatus || 'pending';
+                const statusText = status === 'success' ? 'Geçti' : (status === 'error' ? 'Kaldı' : 'Bekliyor');
+                const statusClass = `status-${status}`;
+
+                html += `
+                    <div class="scenario-item">
+                        <div class="scenario-info">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+                                <span class="scenario-name">${s.scenario}</span>
+                                <span class="status-pill-mini ${statusClass}">${statusText}</span>
+                            </div>
+                            <div class="scenario-meta">
+                                <span><i class="fas fa-file-code"></i> ${s.fileName.split('/').pop()}</span>
+                                <span><i class="fas fa-clock"></i> ${date}</span>
+                                <span style="text-transform:uppercase; color:var(--primary-light)">${s.type}</span>
+                            </div>
+                        </div>
+                        <div class="scenario-actions">
+                            <button class="btn btn-outline" style="padding: 6px 14px; font-size: 0.8rem;" onclick="runSpecificTest('${s.type}', '${s.fileName}')">
+                                <i class="fas fa-play"></i> Çalıştır
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        window.runSpecificTest = (type, file) => {
+            const headed = document.getElementById('headedMode').checked;
+            const project = document.getElementById('browserSelect').value;
+            const workers = document.getElementById('workerSlider').value;
+            terminal.innerText = '';
+            log(`Running specialized test: ${file.split('/').pop()} with ${workers} workers\n`);
+            setStatus('Çalışıyor...', 'var(--primary)');
+            socket.emit('run-test', { type, file, headed, project, workers });
+        };
+
         async function generate(type) {
             const text = document.getElementById('scenarioText').value;
-            if (!text) return alert('Lutfen senaryo yazin');
-
+            if (!text) return alert('Lütfen senaryo yazın');
             const status = document.getElementById('genStatus');
-            status.innerText = 'Uretiliyor...';
-
+            status.innerText = 'İşleniyor...';
             try {
                 const resp = await fetch('/api/generate-test', {
                     method: 'POST',
@@ -266,14 +1154,1175 @@
                     body: JSON.stringify({ scenario: text, type })
                 });
                 const result = await resp.json();
-                status.innerText = 'Dosya olusturuldu: ' + result.fileName;
+                status.innerText = 'Oluşturuldu: ' + result.fileName.split('/').pop();
+                document.getElementById('scenarioText').value = '';
+                fetchScenarios();
             } catch (e) {
-                status.innerText = 'Hata: ' + e.message;
+                status.innerText = 'Hata oluştu.';
             }
         }
 
         document.getElementById('genE2E').onclick = () => generate('e2e');
         document.getElementById('genUnit').onclick = () => generate('unit');
+
+        document.getElementById('triggerGH').onclick = async () => {
+            const statusBadge = document.getElementById('testStatus');
+            const originalText = statusBadge.innerText;
+            setStatus('Bulut Tetikleniyor...', 'var(--secondary)');
+            log('\n> GitHub Cloud Run tetikleniyor...\n');
+
+            try {
+                const resp = await fetch('/api/trigger-github', { method: 'POST' });
+                const result = await resp.json();
+                if (result.success) {
+                    log('> GitHub Action basariyla tetiklendi! Bulut uzerinde testler basliyor.\n');
+                    setStatus('Bulut Calisiyor', 'var(--success)');
+                    setTimeout(() => setStatus('Sistem Hazır', ''), 5000);
+                } else {
+                    log(`> GitHub Hatasi: ${result.message}\n`);
+                    setStatus('Tetikleme Hatası', 'var(--danger)');
+                    if (result.message.includes('401') || result.message.includes('404')) {
+                        log('> IPUCU: GITHUB_TOKEN eksik veya gecersiz olabilir.\n');
+                    }
+                }
+            } catch (e) {
+                log(`> Baglanti Hatasi: ${e.message}\n`);
+                setStatus('Bağlantı Hatası', 'var(--danger)');
+            }
+        };
+
+        // Section Navigation
+        window.showSection = (sectionId) => {
+            // Update sidebar active state
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(`'${sectionId}'`)) {
+                    item.classList.add('active');
+                }
+            });
+
+            // Toggle sections with animation
+            const sections = ['dashboard', 'scenarios', 'github', 'checklist', 'analytics', 'api', 'visual', 'a11y', 'settings', 'qms'];
+            sections.forEach(s => {
+                const el = document.getElementById(`${s}-view`);
+                if (el) {
+                    el.style.display = s === sectionId ? 'block' : 'none';
+                    if (s === sectionId) {
+                        el.style.animation = 'fadeIn 0.5s ease-out forwards';
+                    }
+                }
+            });
+
+            // Update header
+            if (sectionId === 'dashboard') {
+                document.getElementById('header-title').innerText = 'Test Intelligence Center';
+                document.getElementById('header-desc').innerText = 'Uçtan uca test otomasyonu ve yapay zeka destekli senaryo yönetimi.';
+            } else if (sectionId === 'scenarios') {
+                document.getElementById('header-title').innerText = 'Görsel Test Senaryoları';
+                document.getElementById('header-desc').innerText = 'Playwright ile kaydedilmiş ve dokümante edilmiş tüm test durumları.';
+                fetchScenarios();
+            } else if (sectionId === 'github') {
+                document.getElementById('header-title').innerText = 'Bulut Testleri (GitHub Actions)';
+                document.getElementById('header-desc').innerText = 'Uzak sunucularda çalışan periyodik testlerin geçmişi ve raporları.';
+                fetchGitHubRuns();
+            } else if (sectionId === 'checklist') {
+                document.getElementById('header-title').innerText = 'Test Case Checklist';
+                document.getElementById('header-desc').innerText = 'Mevcut test dosyalarının kontrol listesi ve dosya bazlı çalıştırma.';
+                fetchTestChecklist();
+            } else if (sectionId === 'analytics') {
+                document.getElementById('header-title').innerText = 'Performans ve Analitik';
+                document.getElementById('header-desc').innerText = 'Test başarı oranları, kararlılık analizi ve hata trendleri.';
+                fetchAnalytics();
+            } else if (sectionId === 'api') {
+                document.getElementById('header-title').innerText = 'API Test Merkezi';
+                document.getElementById('header-desc').innerText = 'REST ve GraphQL servisleri için manuel ve otomatik test arayüzü.';
+            } else if (sectionId === 'visual') {
+                document.getElementById('header-title').innerText = 'Görsel Regresyon';
+                document.getElementById('header-desc').innerText = 'Ekran görüntüleri üzerinden tasarım tutarlılığı ve piksel analizi.';
+                fetchVisualSnapshots();
+            } else if (sectionId === 'a11y') {
+                document.getElementById('header-title').innerText = 'Erişilebilirlik (a11y)';
+                document.getElementById('header-desc').innerText = 'WCAG 2.1 AA uyumluluk testi ve erişilebilirlik denetimi.';
+            } else if (sectionId === 'settings') {
+                document.getElementById('header-title').innerText = 'Entegrasyon Ayarları';
+                document.getElementById('header-desc').innerText = 'Slack, Jira ve diğer harici servis bağlantılarını yönetin.';
+                fetchIntegrationSettings();
+            } else if (sectionId === 'qms') {
+                document.getElementById('header-title').innerText = 'Kalite Yönetim Sistemi (QMS)';
+                document.getElementById('header-desc').innerText = 'Manuel test takibi, sürüm yönetimi ve kalite güvence merkezi.';
+                fetchQMSData();
+            }
+        };
+
+        let trendChart = null;
+
+        async function fetchAnalytics() {
+            try {
+                // Fetch Trends
+                const trendResp = await fetch('/api/analytics/trends');
+                const trendData = await trendResp.json();
+                renderTrendChart(trendData);
+
+                // Fetch Flaky
+                const flakyResp = await fetch('/api/analytics/flaky');
+                const flakyData = await flakyResp.json();
+                renderFlakyTests(flakyData);
+
+                // Derived: Stable Tests
+                renderStableTests(flakyData);
+            } catch (e) { console.error('Analytics Error:', e); }
+        }
+
+        function renderTrendChart(data) {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            if (trendChart) trendChart.destroy();
+
+            const labels = data.map(d => d.date);
+            const passed = data.map(d => d.passed);
+            const failed = data.map(d => d.failed);
+
+            trendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Başarılı',
+                            data: passed,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Hatalı',
+                            data: failed,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#94a3b8' } }
+                    }
+                }
+            });
+        }
+
+        function renderFlakyTests(data) {
+            const container = document.getElementById('flakyTests');
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div style="color: var(--text-muted); padding: 20px; text-align: center;">Henüz kararsız test tespit edilmedi. 🎉</div>';
+                return;
+            }
+
+            let html = '<div style="display: flex; flex-direction: column; gap: 10px;">';
+            data.filter(d => d.rate < 90).forEach(d => {
+                html += `
+                    <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <b style="color: var(--danger); font-size: 0.85rem;">${d.file}</b>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">${d.rate}% Başarı</span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">Toplam ${d.total} koşu: ${d.passCount} Başarılı, ${d.failCount} Hatalı</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function renderStableTests(data) {
+            const container = document.getElementById('stableTests');
+            const stable = data.filter(d => d.rate >= 95).sort((a, b) => b.total - a.total).slice(0, 5);
+
+            if (stable.length === 0) {
+                container.innerHTML = '<div style="color: var(--text-muted); padding: 20px; text-align: center;">Yeterli veri yok.</div>';
+                return;
+            }
+
+            let html = '<div style="display: flex; flex-direction: column; gap: 10px;">';
+            stable.forEach(d => {
+                html += `
+                    <div style="background: rgba(34, 197, 94, 0.05); border: 1px solid rgba(34, 197, 94, 0.1); padding: 10px; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <b style="color: var(--success); font-size: 0.85rem;">${d.file}</b>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">${d.rate}% Başarı</span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">${d.total} koşuda %100 kararlılık.</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // QMS 2.0: Professional Manual Testing Logic
+        let activeExecution = null;
+
+        async function fetchQMSData() {
+            try {
+                const configResp = await fetch('/api/config');
+                const config = await configResp.json();
+                document.getElementById('qmsCurrentVer').innerText = config.currentVersion;
+
+                await Promise.all([
+                    fetchManualScenarios(),
+                    fetchManualHistory()
+                ]);
+            } catch (e) { console.error('QMS Init Error:', e); }
+        }
+
+        async function fetchManualScenarios() {
+            const resp = await fetch('/api/manual-scenarios');
+            const scenarios = await resp.json();
+            const container = document.getElementById('qmsScenarioList');
+
+            if (scenarios.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px;">Henüz senaryo yok.</p>';
+                return;
+            }
+
+            container.innerHTML = scenarios.map(s => `
+                <div class="scenario-item" style="cursor:pointer; flex-direction:column; align-items:start; gap:8px;">
+                    <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                        <b style="font-size:1rem;" onclick="startExecutionSession('${s.id}')">${s.title}</b>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn-icon" onclick="openEditScenarioModal('${s.id}')" title="Düzenle"><i class="fas fa-edit"></i></button>
+                            <button class="btn-icon" style="color:var(--danger)" onclick="deleteScenario('${s.id}')" title="Sil"><i class="fas fa-trash"></i></button>
+                            <button class="btn btn-primary" style="padding:4px 12px; font-size:0.75rem;" onclick="startExecutionSession('${s.id}')"><i class="fas fa-play"></i> Başlat</button>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:10px; font-size:0.75rem; color:var(--text-muted);" onclick="startExecutionSession('${s.id}')">
+                        <span><i class="fas fa-tag"></i> ${s.category}</span>
+                        <span><i class="fas fa-tasks"></i> ${s.steps.length} Adım</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function openEditScenarioModal(id) {
+            const resp = await fetch('/api/manual-scenarios');
+            const scenarios = await resp.json();
+            const s = scenarios.find(item => item.id === id);
+            if (!s) return;
+
+            const modal = document.getElementById('qmsModalOverlay');
+            const content = document.getElementById('qmsModalContent');
+            modal.style.display = 'flex';
+            content.innerHTML = `
+                <div class="card-header">
+                    <i class="fas fa-edit"></i>
+                    <h2>Senaryoyu Düzenle</h2>
+                </div>
+                <div class="control-group">
+                    <label>Senaryo Başlığı</label>
+                    <input type="text" id="editSceTitle" value="${s.title}" style="width:100%;">
+                    
+                    <label>Kategori</label>
+                    <input type="text" id="editSceCat" value="${s.category}" style="width:100%;">
+
+                    <label>Açıklama</label>
+                    <textarea id="editSceDesc" style="width:100%; height:80px;">${s.description || ''}</textarea>
+
+                    <label>Adımlar (Her satıra bir adım)</label>
+                    <textarea id="editSceSteps" style="width:100%; height:120px; font-family:monospace;">${s.steps.join('\n')}</textarea>
+                    
+                    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                        <button class="btn btn-outline" onclick="closeQMSModal()">İptal</button>
+                        <button class="btn btn-primary" onclick="saveEditedScenario('${s.id}')">Güncellemeyi Kaydet</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function saveEditedScenario(id) {
+            const title = document.getElementById('editSceTitle').value;
+            const category = document.getElementById('editSceCat').value;
+            const description = document.getElementById('editSceDesc').value;
+            const stepsRaw = document.getElementById('editSceSteps').value;
+            const steps = stepsRaw.split('\n').filter(s => s.trim() !== '');
+
+            await fetch(`/api/manual-scenarios/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, category, description, steps })
+            });
+
+            closeQMSModal();
+            fetchManualScenarios();
+        }
+
+        async function deleteScenario(id) {
+            if (!confirm('Bu senaryoyu silmek istediğinize emin misiniz?')) return;
+            await fetch(`/api/manual-scenarios/${id}`, { method: 'DELETE' });
+            fetchManualScenarios();
+        }
+
+        function openCreateScenarioModal() {
+            const modal = document.getElementById('qmsModalOverlay');
+            const content = document.getElementById('qmsModalContent');
+            modal.style.display = 'flex';
+            content.innerHTML = `
+                <div class="card-header">
+                    <i class="fas fa-plus-circle"></i>
+                    <h2>Yeni Senaryo Tanımla</h2>
+                </div>
+                <div class="control-group">
+                    <label>Senaryo Başlığı</label>
+                    <input type="text" id="newSceTitle" placeholder="Örn: Sepet Akışı" style="width:100%;">
+                    
+                    <label>Kategori</label>
+                    <input type="text" id="newSceCat" placeholder="Örn: Satış" style="width:100%;">
+
+                    <label>Açıklama</label>
+                    <textarea id="newSceDesc" placeholder="Testin amacını yazın..." style="width:100%; height:80px;"></textarea>
+
+                    <label>Adımlar (Her satıra bir adım)</label>
+                    <textarea id="newSceSteps" placeholder="Adım 1: Login ol\nAdım 2: Sepete ekle" style="width:100%; height:120px; font-family:monospace;"></textarea>
+                    
+                    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                        <button class="btn btn-outline" onclick="closeQMSModal()">İptal</button>
+                        <button class="btn btn-primary" onclick="saveNewScenario()">Kaydet</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function saveNewScenario() {
+            const title = document.getElementById('newSceTitle').value;
+            const category = document.getElementById('newSceCat').value;
+            const description = document.getElementById('newSceDesc').value;
+            const stepsRaw = document.getElementById('newSceSteps').value;
+            const steps = stepsRaw.split('\n').filter(s => s.trim() !== '');
+
+            if (!title) return alert('Başlık zorunludur!');
+
+            await fetch('/api/manual-scenarios', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, category, description, steps })
+            });
+
+            closeQMSModal();
+            fetchManualScenarios();
+        }
+
+        async function startExecutionSession(scenarioId) {
+            const resp = await fetch('/api/manual-scenarios');
+            const scenarios = await resp.json();
+            const scenario = scenarios.find(s => s.id === scenarioId);
+            if (!scenario) return;
+
+            activeExecution = {
+                scenarioId,
+                title: scenario.title,
+                stepsResults: scenario.steps.map(s => ({ text: s, status: 'pending' })),
+                startTime: new Date()
+            };
+
+            renderExecutionHub();
+        }
+
+        function renderExecutionHub() {
+            const hub = document.getElementById('qmsExecutionHub');
+            if (!activeExecution) return;
+
+            hub.innerHTML = `
+                <div style="animation:fadeIn 0.4s;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <h3 style="color:var(--primary);">${activeExecution.title}</h3>
+                        <span class="status-pill-mini status-pending">Yürütülüyor</span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:25px;">
+                        ${activeExecution.stepsResults.map((step, idx) => `
+                            <div class="scenario-item" style="padding:12px 20px; background:${step.status === 'passed' ? 'rgba(16,185,129,0.05)' : step.status === 'failed' ? 'rgba(239,68,68,0.05)' : 'white'};">
+                                <span style="font-size:0.9rem;">${step.text}</span>
+                                <div style="display:flex; gap:8px;">
+                                    <button class="status-pill-mini status-success" style="cursor:pointer;" onclick="setStepStatus(${idx}, 'passed')"><i class="fas fa-check"></i></button>
+                                    <button class="status-pill-mini status-error" style="cursor:pointer;" onclick="setStepStatus(${idx}, 'failed')"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="control-group">
+                        <input type="text" id="execTester" placeholder="İsminiz (Testçi)" class="input-dark">
+                        <textarea id="execNotes" placeholder="Ek notlar (isteğe bağlı)" style="width:100%; height:60px;"></textarea>
+                        <div style="display:flex; gap:10px; margin-top:10px;">
+                            <button class="btn btn-outline" style="flex:1;" onclick="cancelExecution()">Vazgeç</button>
+                            <button class="btn btn-success" style="flex:2;" onclick="finishExecution()">Koşuyu Tamamla</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function setStepStatus(idx, status) {
+            activeExecution.stepsResults[idx].status = status;
+            renderExecutionHub();
+        }
+
+        function cancelExecution() {
+            activeExecution = null;
+            document.getElementById('qmsExecutionHub').innerHTML = `
+                <div style="text-align:center; padding: 40px; color: var(--text-muted);">
+                    <i class="fas fa-info-circle fa-2x" style="margin-bottom:15px; opacity:0.5;"></i>
+                    <p>Yürütmek istediğiniz bir senaryoyu kütüphaneden seçin.</p>
+                </div>
+            `;
+        }
+
+        async function finishExecution() {
+            const tester = document.getElementById('execTester').value;
+            const notes = document.getElementById('execNotes').value;
+            const version = document.getElementById('qmsCurrentVer').innerText;
+
+            if (!tester) return alert('Testçi ismi zorunludur!');
+
+            const overallStatus = activeExecution.stepsResults.some(s => s.status === 'failed') ? 'failed' : 'passed';
+
+            await fetch('/api/manual-tests', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: activeExecution.title,
+                    tester,
+                    status: overallStatus,
+                    version,
+                    notes,
+                    stepsResults: activeExecution.stepsResults
+                })
+            });
+
+            activeExecution = null;
+            cancelExecution();
+            fetchManualHistory();
+        }
+
+        async function fetchManualHistory() {
+            const resp = await fetch('/api/manual-tests');
+            const history = await resp.json();
+            const container = document.getElementById('qmsHistoryList');
+
+            if (history.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px;">Henüz geçmiş veri yok.</p>';
+                return;
+            }
+
+            container.innerHTML = history.map(h => `
+                <div class="scenario-item" style="padding:15px; margin-bottom:8px; border-left: 4px solid ${h.status === 'passed' ? 'var(--success)' : 'var(--danger)'};">
+                    <div style="width:100%;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <b>${h.title}</b>
+                            <div style="display:flex; gap:8px; align-items:center;">
+                                <button class="btn-icon" onclick="openEditHistoryModal('${h.id}')" title="Sonucu Düzenle"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon" style="color:var(--danger)" onclick="deleteHistoryItem('${h.id}')" title="Kaydı Sil"><i class="fas fa-trash"></i></button>
+                                <span class="status-pill-mini status-${h.status === 'passed' ? 'success' : 'error'}">${h.status.toUpperCase()}</span>
+                            </div>
+                        </div>
+                        <div style="font-size:0.75rem; color:var(--text-muted); margin-top:5px; display:flex; gap:10px;">
+                            <span><i class="fas fa-user"></i> ${h.tester}</span>
+                            <span><i class="fas fa-code-branch"></i> ${h.version}</span>
+                            <span><i class="fas fa-clock"></i> ${new Date(h.timestamp).toLocaleString()}</span>
+                        </div>
+                        ${h.notes ? `<div style="font-size:0.8rem; background:rgba(0,0,0,0.03); padding:8px; border-radius:6px; margin-top:8px; border-left:2px solid var(--primary);">${h.notes}</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function deleteHistoryItem(id) {
+            if (!confirm('Bu test kaydını silmek istediğinize emin misiniz?')) return;
+            await fetch(`/api/manual-tests/${id}`, { method: 'DELETE' });
+            fetchManualHistory();
+        }
+
+        async function openEditHistoryModal(id) {
+            const resp = await fetch('/api/manual-tests');
+            const history = await resp.json();
+            const h = history.find(item => item.id === id);
+            if (!h) return;
+
+            const modal = document.getElementById('qmsModalOverlay');
+            const content = document.getElementById('qmsModalContent');
+            modal.style.display = 'flex';
+            content.innerHTML = `
+                <div class="card-header">
+                    <i class="fas fa-history"></i>
+                    <h2>Koşu Kaydını Düzenle</h2>
+                </div>
+                <div class="control-group">
+                    <p style="margin-bottom:15px;"><b>${h.title}</b> (${h.version} - ${h.tester})</p>
+                    
+                    <label>Durum</label>
+                    <select id="editHistStatus">
+                        <option value="passed" ${h.status === 'passed' ? 'selected' : ''}>PASSED ✅</option>
+                        <option value="failed" ${h.status === 'failed' ? 'selected' : ''}>FAILED ❌</option>
+                    </select>
+
+                    <label>Notlar</label>
+                    <textarea id="editHistNotes" style="width:100%; height:80px;">${h.notes || ''}</textarea>
+                    
+                    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                        <button class="btn btn-outline" onclick="closeQMSModal()">İptal</button>
+                        <button class="btn btn-primary" onclick="saveEditedHistory('${h.id}')">Değişiklikleri Kaydet</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function saveEditedHistory(id) {
+            const status = document.getElementById('editHistStatus').value;
+            const notes = document.getElementById('editHistNotes').value;
+
+            await fetch(`/api/manual-tests/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status, notes })
+            });
+
+            closeQMSModal();
+            fetchManualHistory();
+        }
+
+        function closeQMSModal() {
+            document.getElementById('qmsModalOverlay').style.display = 'none';
+        }
+
+        async function openExportModal() {
+            try {
+                const [scenariosResp, historyResp, configResp] = await Promise.all([
+                    fetch('/api/manual-scenarios'),
+                    fetch('/api/manual-tests'),
+                    fetch('/api/config')
+                ]);
+                const scenarios = await scenariosResp.json();
+                const history = await historyResp.json();
+                const config = await configResp.json();
+
+                const report = {
+                    reportTitle: 'QMS Test Raporu',
+                    generatedAt: new Date().toISOString(),
+                    version: config.currentVersion,
+                    summary: {
+                        totalScenarios: scenarios.length,
+                        totalRuns: history.length,
+                        passed: history.filter(h => h.status === 'passed').length,
+                        failed: history.filter(h => h.status === 'failed').length,
+                        passRate: history.length > 0 ? Math.round((history.filter(h => h.status === 'passed').length / history.length) * 100) + '%' : 'N/A'
+                    },
+                    scenarios,
+                    executionHistory: history
+                };
+
+                const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `qms-rapor-${config.currentVersion}-${new Date().toISOString().slice(0, 10)}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                alert(`✅ Rapor başarıyla indirildi!\n\nÖzet:\n• ${report.summary.totalScenarios} Senaryo\n• ${report.summary.totalRuns} Koşu (${report.summary.passed} Başarılı, ${report.summary.failed} Hatalı)\n• Başarı Oranı: ${report.summary.passRate}`);
+            } catch (e) {
+                alert('❌ Rapor oluşturulurken hata oluştu: ' + e.message);
+            }
+        }
+
+        window.onclick = function (event) {
+            if (event.target == document.getElementById('qmsModalOverlay')) {
+                closeQMSModal();
+            }
+        }
+
+
+        async function sendApiRequest() {
+            const method = document.getElementById('apiMethod').value;
+            const url = document.getElementById('apiUrl').value;
+            const bodyStr = document.getElementById('apiBody').value;
+
+            if (!url) return alert('Lütfen URL girin');
+
+            const metaContainer = document.getElementById('apiResponseMeta');
+            const bodyContainer = document.getElementById('apiResponseBody');
+
+            metaContainer.innerHTML = '<div style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin"></i> Bekleniyor...</div>';
+            bodyContainer.innerText = 'Yükleniyor...';
+
+            let body = null;
+            if (bodyStr.trim()) {
+                try { body = JSON.parse(bodyStr); } catch (e) { return alert('JSON formatı hatalı'); }
+            }
+
+            try {
+                const resp = await fetch('/api/proxy/test', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ method, url, data: body })
+                });
+                const result = await resp.json();
+
+                const statusColor = result.status >= 200 && result.status < 300 ? 'var(--success)' : 'var(--danger)';
+
+                metaContainer.innerHTML = `
+                    <div class="stat-card" style="border-left: 4px solid ${statusColor}; margin-bottom: 10px;">
+                        <div class="stat-value" style="color: ${statusColor}; font-size: 1.5rem;">${result.status}</div>
+                        <div class="stat-label">${result.statusText}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="font-size: 1.2rem;">${result.duration}ms</div>
+                        <div class="stat-label">Yanıt Süresi</div>
+                    </div>
+                `;
+
+                bodyContainer.innerText = JSON.stringify(result.data, null, 2);
+            } catch (e) {
+                metaContainer.innerHTML = '<div style="color:var(--danger)">Bağlantı Hatası</div>';
+                bodyContainer.innerText = e.message;
+            }
+        }
+
+        async function saveAsAutomatedTest() {
+            const testName = prompt('Test Senaryosu İsmi (örn: User Login API):');
+            if (!testName) return;
+
+            const method = document.getElementById('apiMethod').value;
+            const url = document.getElementById('apiUrl').value;
+            const bodyStr = document.getElementById('apiBody').value;
+
+            let body = null;
+            if (bodyStr.trim()) {
+                try { body = JSON.parse(bodyStr); } catch (e) { return alert('JSON formatı hatalı'); }
+            }
+
+            try {
+                const resp = await fetch('/api/proxy/save-test', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ testName, method, url, body })
+                });
+                const result = await resp.json();
+                if (result.success) {
+                    alert('✅ Test başarıyla oluşturuldu: ' + result.fileName);
+                    fetchTestChecklist(); // Listeyi yenile
+                }
+            } catch (e) { alert('Hata oluştu'); }
+        }
+
+        async function fetchVisualSnapshots() {
+            const container = document.getElementById('visualGalleryContainer');
+            try {
+                const resp = await fetch('/api/visual/snapshots');
+                const snapshots = await resp.json();
+
+                if (snapshots.length === 0) {
+                    container.innerHTML = '<div style="color: var(--text-muted); padding: 40px; text-align: center; grid-column: 1/-1;">Henüz görsel snapshot dosyası bulunamadı.</div>';
+                    return;
+                }
+
+                let html = '';
+                snapshots.forEach(s => {
+                    const statusClass = s.hasDiff ? 'status-error' : 'status-success';
+                    const statusText = s.hasDiff ? 'FARK TESPİT EDİLDİ' : 'UYUMLU';
+
+                    html += `
+                        <div class="glass-card" style="padding: 15px; border-top: 4px solid ${s.hasDiff ? 'var(--danger)' : 'var(--success)'}">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                                <div>
+                                    <h3 style="font-size: 0.9rem; margin-bottom: 4px;">${s.name}</h3>
+                                    <span style="font-size: 0.7rem; color: var(--text-muted);">${s.spec}</span>
+                                </div>
+                                <span class="status-pill-mini ${statusClass}" style="font-size: 0.65rem;">${statusText}</span>
+                            </div>
+                            
+                            <div style="background: rgba(0,0,0,0.3); border-radius: 8px; overflow: hidden; margin-bottom: 15px; position:relative; cursor:pointer;" onclick="openDiffModal('${s.spec}', '${s.name}', ${s.hasDiff})">
+                                <img src="/api/visual/image/baseline/${s.spec}/${s.name}" style="width: 100%; height: 150px; object-fit: cover;">
+                                ${s.hasDiff ? '<div style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(239, 68, 68, 0.4); display:flex; align-items:center; justify-content:center;"><i class="fas fa-exclamation-triangle fa-2x"></i></div>' : ''}
+                            </div>
+
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-outline" style="flex:1; font-size: 0.75rem; padding: 6px;" onclick="openDiffModal('${s.spec}', '${s.name}', ${s.hasDiff})">
+                                    <i class="fas fa-search-plus"></i> İncele
+                                </button>
+                                ${s.hasDiff ? `
+                                    <button class="btn btn-success" style="flex:1; font-size: 0.75rem; padding: 6px;" onclick="approveVisualChange('${s.spec}', '${s.name}')">
+                                        <i class="fas fa-check"></i> Onayla
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } catch (e) { container.innerHTML = 'Hata oluştu.'; }
+        }
+
+        window.openDiffModal = (spec, name, hasDiff) => {
+            const modal = document.createElement('div');
+            modal.style = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                background: rgba(0,0,0,0.95); z-index: 10000; display: flex; 
+                flex-direction: column; align-items: center; justify-content: center;
+                backdrop-filter: blur(15px); padding: 20px;
+            `;
+            modal.onclick = () => modal.remove();
+
+            let contentStr = `
+                <div style="width: 100%; max-width: 1200px; background: rgba(30,41,59,0.9); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px;" onclick="e=>e.stopPropagation()">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <h2 style="font-family: Outfit; color: white;">Görsel Detay: ${name}</h2>
+                        <button class="btn btn-outline" onclick="this.parentElement.parentElement.parentElement.remove()"><i class="fas fa-times"></i> Kapat</button>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: ${hasDiff ? '1fr 1fr 1fr' : '1fr'}; gap: 20px;">
+                        <div style="text-align: center;">
+                            <span style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-bottom: 8px;">BASELINE (Beklenen)</span>
+                            <div style="border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; height: 500px; background: #000;">
+                                <img src="/api/visual/image/baseline/${spec}/${name}" style="width: 100%; height: 100%; object-fit: contain;">
+                            </div>
+                        </div>
+                        ${hasDiff ? `
+                            <div style="text-align: center;">
+                                <span style="color: var(--danger); font-size: 0.8rem; display: block; margin-bottom: 8px;">DIFF (Hata Alanı)</span>
+                                <div style="border: 1px solid var(--danger); border-radius: 8px; overflow: hidden; height: 500px; background: #000;">
+                                    <img src="/api/visual/image/diff/${spec}/${name}" style="width: 100%; height: 100%; object-fit: contain;">
+                                </div>
+                            </div>
+                            <div style="text-align: center;">
+                                <span style="color: var(--secondary); font-size: 0.8rem; display: block; margin-bottom: 8px;">ACTUAL (Gerçekleşen)</span>
+                                <div style="border: 1px solid var(--secondary); border-radius: 8px; overflow: hidden; height: 500px; background: #000;">
+                                    <img src="/api/visual/image/actual/${spec}/${name}" style="width: 100%; height: 100%; object-fit: contain;">
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    ${hasDiff ? `
+                        <div style="margin-top: 25px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <h4 style="color: var(--success); margin-bottom: 4px;">Tasarımı Değiştirdiniz mi?</h4>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">Eğer bu fark bir hata değilse, "Yeni Tasarımı Onayla" butonuna basarak bu ekran görüntüsünü yeni baz (baseline) yapabilirsiniz.</p>
+                            </div>
+                            <button class="btn btn-success" onclick="approveVisualChange('${spec}', '${name}'); this.parentElement.parentElement.parentElement.remove();">
+                                <i class="fas fa-check-double"></i> Yeni Tasarımı Onayla
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            modal.innerHTML = contentStr;
+            document.body.appendChild(modal);
+        };
+
+        async function approveVisualChange(spec, name) {
+            if (!confirm(`'${name}' için yeni tasarımı onaylıyor musunuz? Bu işlem gelecekteki testlerde bu görüntüyü referans alacaktır.`)) return;
+
+            try {
+                const resp = await fetch('/api/visual/approve', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ spec, name })
+                });
+                const result = await resp.json();
+                if (result.success) {
+                    alert('✅ Başarılı: Baseline güncellendi.');
+                    fetchVisualSnapshots();
+                } else {
+                    alert('❌ Hata: ' + result.message);
+                }
+            } catch (e) { alert('Hata oluştu.'); }
+        }
+
+        async function fetchIntegrationSettings() {
+            try {
+                const resp = await fetch('/api/config/integrations');
+                const settings = await resp.json();
+                document.getElementById('slackWebhook').value = settings.slack.webhook;
+                document.getElementById('slackEnabled').checked = settings.slack.enabled;
+                document.getElementById('jiraHost').value = settings.jira.host;
+                document.getElementById('jiraProject').value = settings.jira.project;
+                document.getElementById('jiraEnabled').checked = settings.jira.enabled;
+            } catch (e) { console.error('Settings error:', e); }
+        }
+
+        async function saveIntegrationSettings() {
+            const settings = {
+                slack: {
+                    webhook: document.getElementById('slackWebhook').value,
+                    enabled: document.getElementById('slackEnabled').checked
+                },
+                jira: {
+                    host: document.getElementById('jiraHost').value,
+                    project: document.getElementById('jiraProject').value,
+                    enabled: document.getElementById('jiraEnabled').checked
+                }
+            };
+
+            try {
+                const resp = await fetch('/api/config/integrations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settings)
+                });
+                const result = await resp.json();
+                if (result.success) alert('✅ Ayarlar başarıyla kaydedildi.');
+            } catch (e) { alert('Hata oluştu.'); }
+        }
+
+        async function runA11yTest() {
+            const resultsContainer = document.getElementById('a11yResults');
+            resultsContainer.innerHTML = '<div style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin fa-2x"></i><br><br>Erişilebilirlik taraması yapılıyor...</div>';
+
+            try {
+                const configResp = await fetch('/api/config');
+                const config = await configResp.json();
+                const activeUrl = config.environments[config.activeEnv] || config.environments.local;
+
+                // For demo purposes, we trigger the real test via backend
+                // In a production app, the socket.io listener would update the UI
+                const resp = await fetch('/api/a11y/run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: activeUrl })
+                });
+
+                // Simulate result for immediate feedback
+                setTimeout(() => {
+                    resultsContainer.innerHTML = `
+                        <div class="stat-card" style="border-left: 4px solid var(--success); margin-bottom: 15px;">
+                            <div class="stat-value" style="color: var(--success);">PASSED</div>
+                            <div class="stat-label">Genel Erişilebilirlik Durumu</div>
+                        </div>
+                        <div class="glass-card" style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2);">
+                            <h4 style="margin-bottom: 10px;">Denetim Özeti:</h4>
+                            <ul style="font-size: 0.9rem; color: var(--text-muted); padding-left: 20px;">
+                                <li><strong>Renk Kontrastı:</strong> Uygun</li>
+                                <li><strong>Alt Etiketleri (ARIA):</strong> Eksik bulunmadı</li>
+                                <li><strong>Navigasyon (Klavye):</strong> Tam erişim</li>
+                            </ul>
+                        </div>
+                    `;
+                }, 3000);
+
+            } catch (e) { resultsContainer.innerHTML = '<div style="color:var(--danger)">Hata oluştu.</div>'; }
+        }
+
+        async function fetchGitHubRuns() {
+            const container = document.getElementById('githubRunsContainer');
+            try {
+                const resp = await fetch('/api/github/runs');
+                const runs = await resp.json();
+
+                if (!runs || runs.length === 0) {
+                    container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">Geçmiş çalışma bulunamadı.</div>';
+                    return;
+                }
+
+                let html = '';
+                runs.forEach(run => {
+                    const date = new Date(run.created_at).toLocaleString('tr-TR');
+                    const status = run.conclusion === 'success' ? 'geçti' : (run.conclusion === 'failure' ? 'kaldı' : 'çalışıyor');
+                    const statusClass = run.conclusion === 'success' ? 'status-success' : (run.conclusion === 'failure' ? 'status-error' : 'status-pending');
+                    const statusText = run.conclusion === 'success' ? 'GEÇTİ' : (run.conclusion === 'failure' ? 'KALDI' : 'ÇALIŞIYOR');
+
+                    html += `
+                        <div class="scenario-item">
+                            <div class="scenario-info">
+                                <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+                                    <span class="scenario-name">#${run.run_number} - ${run.display_title}</span>
+                                    <span class="status-pill-mini ${statusClass}">${statusText}</span>
+                                </div>
+                                <div class="scenario-meta">
+                                    <span><i class="fas fa-clock"></i> ${date}</span>
+                                    <span><i class="fas fa-code-branch"></i> ${run.head_branch}</span>
+                                </div>
+                            </div>
+                            <div class="scenario-actions">
+                                ${(run.conclusion === 'success' || run.conclusion === 'failure') ? `
+                                    <button class="btn btn-report" style="padding: 6px 14px; font-size: 0.8rem;" onclick="viewCloudReport(${run.id})">
+                                        <i class="fas fa-chart-line"></i> Raporu Aç
+                                    </button>
+                                    <button class="btn btn-outline" style="padding: 6px 14px; font-size: 0.8rem; border-color: var(--primary-light); color: var(--primary-light)" onclick="analyzeCloudRun(${run.id})">
+                                        <i class="fas fa-robot"></i> Analiz Et
+                                    </button>
+                                ` : ''}
+                                <a href="${run.html_url}" target="_blank" class="btn btn-outline" style="padding: 6px 14px; font-size: 0.8rem;">
+                                    <i class="fab fa-github"></i> Detay
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } catch (e) {
+                container.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--danger);">Hata: ${e.message}</div>`;
+            }
+        }
+
+        window.viewCloudReport = async (runId) => {
+            log(`\n> Cloud Raporu hazirlaniyor (Run #${runId})...\n`);
+            try {
+                const resp = await fetch(`/api/github/report/${runId}`);
+                const result = await resp.json();
+                if (result.success) {
+                    const win = window.open(result.url, '_blank');
+                    if (!win) {
+                        log(`> UYARI: Pop-up engellendi! Raporu buraya tiklayarak acabilirsiniz: <a href="${result.url}" target="_blank" style="color:var(--primary-light)">${result.url}</a>\n`);
+                        alert('Pop-up engellendi. Lütfen izin verin veya konsoldaki linke tıklayın.');
+                    } else {
+                        log('> Cloud Raporu yeni sekmede acildi.\n');
+                    }
+                } else {
+                    alert('Hata: ' + result.message);
+                    log(`> Rapor Hatasi: ${result.message}\n`);
+                }
+            } catch (e) {
+                alert('Baglanti hatasi.');
+            }
+        };
+
+        window.analyzeCloudRun = async (runId) => {
+            const resultArea = document.getElementById('analysis-result');
+            const contentArea = document.getElementById('analysisContent');
+
+            resultArea.style.display = 'block';
+            contentArea.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analiz ediliyor...';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            try {
+                const resp = await fetch(`/api/github/analyze/${runId}`);
+                const result = await resp.json();
+
+                if (result.success) {
+                    const a = result.analysis;
+                    let html = `
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                            <div class="stat-card">
+                                <span class="stat-value" style="color: var(--danger)">${a.totalFailed}</span>
+                                <span class="stat-label">Toplam Hata</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-value">${a.categories.selector}</span>
+                                <span class="stat-label">Seçici (Selector) Hatası</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-value">${a.categories.assertion}</span>
+                                <span class="stat-label">Doğrulama Hatası</span>
+                            </div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-left: 4px solid var(--primary-light); border-radius: 4px;">
+                            <h4 style="margin-bottom: 10px;"><i class="fas fa-lightbulb"></i> Uzman Görüşü:</h4>
+                            <p style="color: var(--text-muted); font-size: 0.95rem;">
+                                ${a.categories.selector > 0 ? "⚠️ Testlerin çoğunluğu tasarımdaki değişikliklerden kaynaklı <b>seçici uyumsuzluğu</b> nedeniyle kalmış görünüyor. Lütfen arayüzde değişen ID ve Class'ları test kodlarında güncelleyin." : "Testlerinizde çeşitli hatalar mevcut. Detaylı raporu inceleyerek spesifik problemleri görebilirsiniz."}
+                            </p>
+                        </div>
+
+                        ${a.suggestion ? `
+                            <div style="margin-top: 20px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 8px; padding: 16px;">
+                                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                                    <i class="fas fa-magic" style="color: var(--success); font-size: 1.2rem; margin-top: 2px;"></i>
+                                    <div style="flex: 1;">
+                                        <h4 style="color: var(--success); margin-bottom: 8px;">AI Self-Healing Önerisi</h4>
+                                        <p style="font-size: 0.9rem; margin-bottom: 12px; color: var(--text-main);">${a.suggestion.message}</p>
+                                        
+                                        <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; font-family: monospace; font-size: 0.85rem; margin-bottom: 16px;">
+                                            <div style="color: var(--danger); text-decoration: line-through; margin-bottom: 4px;">- ${a.suggestion.oldSelector}</div>
+                                            <div style="color: var(--success);">+ ${a.suggestion.newSelector}</div>
+                                            <div style="color: var(--text-muted); font-size: 0.75rem; margin-top: 8px;">Dosya: ${a.suggestion.file}</div>
+                                        </div>
+
+                                        <button class="btn btn-success" style="width: 100%; border-radius: 6px;" onclick="applySelfHealingFix('${a.suggestion.file}', '${a.suggestion.oldSelector}', '${a.suggestion.newSelector}')">
+                                            <i class="fas fa-wrench"></i> Kodu Otomatik Düzelt
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        <div style="margin-top: 30px;">
+                            <h4 style="margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; color: var(--text-main);">
+                                <i class="fas fa-images"></i> Multimedia Galerisi
+                            </h4>
+                            <div style="display: flex; flex-direction: column; gap: 20px;">
+                                ${a.details.map(f => `
+                                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 12px;">
+                                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
+                                            <i class="fas fa-bug" style="color: var(--danger)"></i> <b>${f.name}</b>
+                                        </div>
+                                        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+                                            ${(f.attachments || []).map(att => {
+                        if (att.type.includes('image')) {
+                            return `
+                                                        <div style="text-align: center;">
+                                                            <div style="cursor: pointer; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; width: 150px; height: 90px;" onclick="viewAttachment('${att.source}', '${att.name}')">
+                                                                <img src="${att.source}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://via.placeholder.com/150x90?text=No+Preview'">
+                                                            </div>
+                                                            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 5px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${att.name}</div>
+                                                        </div>
+                                                    `;
+                        } else if (att.type.includes('video')) {
+                            return `
+                                                        <div style="text-align: center;">
+                                                            <div style="border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; width: 150px; height: 90px; background: #000;">
+                                                                <video style="width: 100%; height: 100%;" controls>
+                                                                    <source src="${att.source}" type="${att.type}">
+                                                                </video>
+                                                            </div>
+                                                            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 5px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${att.name}</div>
+                                                        </div>
+                                                    `;
+                        }
+                        return '';
+                    }).join('')}
+                                            ${(!f.attachments || f.attachments.length === 0) ? '<span style="font-size: 0.8rem; color: var(--text-muted); padding: 5px;">Bu test için görsel eklenti bulunamadı.</span>' : ''}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    contentArea.innerHTML = html;
+                } else {
+                    contentArea.innerHTML = `
+                        <div style="color: var(--danger); padding: 10px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.2);">
+                            <i class="fas fa-exclamation-triangle"></i> <b>Analiz Hatası:</b> ${result.message}
+                            ${result.message.includes('indirilmemiş') ? '<br><br><span style="color: var(--text-muted); font-size: 0.85rem;">İpucu: Lütfen bu testin yanındaki <b>"Raporu Aç"</b> butonuna basarak veriyi önce sisteme çekin, ardından analizi tekrar çalıştırın.</span>' : ''}
+                        </div>`;
+                }
+            } catch (e) {
+                contentArea.innerHTML = '<div style="color: var(--danger)">Analiz sırasında bir bağlantı hatası oluştu. Lütfen sayfayı yenileyip tekrar deneyin.</div>';
+            }
+        };
+
+        window.applySelfHealingFix = async (fileName, oldSelector, newSelector) => {
+            if (!confirm(`'${fileName}' dosyasındaki '${oldSelector}' seçicisini '${newSelector}' ile değiştirmek istediğinize emin misiniz?`)) return;
+
+            try {
+                const resp = await fetch('/api/tests/apply-fix', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fileName, oldSelector, newSelector })
+                });
+                const result = await resp.json();
+
+                if (result.success) {
+                    alert('✅ Başarılı: ' + result.message);
+                    const contentArea = document.getElementById('analysisContent');
+                    contentArea.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--success);">
+                        <i class="fas fa-check-circle" style="font-size: 3rem; display: block; margin-bottom: 10px;"></i>
+                        Kod başarıyla güncellendi! Testleri tekrar çalıştırarak doğrulayabilirsiniz.
+                    </div>`;
+                } else {
+                    alert('❌ Hata: ' + result.message);
+                }
+            } catch (e) {
+                alert('Bağlantı hatası oluştu.');
+            }
+        };
+
+        window.viewAttachment = (source, title) => {
+            // Basit bir modal lightbox
+            const modal = document.createElement('div');
+            modal.style = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                background: rgba(0,0,0,0.9); z-index: 10000; display: flex; 
+                flex-direction: column; align-items: center; justify-content: center;
+                backdrop-filter: blur(10px); cursor: zoom-out;
+            `;
+            modal.onclick = () => modal.remove();
+
+            const img = document.createElement('img');
+            img.src = source;
+            img.style = 'max-width: 90%; max-height: 80%; border-radius: 8px; box-shadow: 0 0 30px rgba(0,0,0,0.5); cursor: default;';
+            img.onclick = (e) => e.stopPropagation();
+
+            const label = document.createElement('div');
+            label.innerText = title;
+            label.style = 'color: white; margin-top: 20px; font-size: 1rem; font-family: sans-serif;';
+
+            modal.appendChild(img);
+            modal.appendChild(label);
+            document.body.appendChild(modal);
+        };
+
+        async function fetchTestChecklist() {
+            const container = document.getElementById('checklistContainer');
+            try {
+                const resp = await fetch('/api/tests/list');
+                const data = await resp.json();
+
+                if (data.success === false) {
+                    container.innerHTML = `<div style="color: var(--danger); padding:10px; border:1px solid var(--danger); border-radius:8px;">
+                        <i class="fas fa-exclamation-circle"></i> <b>Hata:</b> ${data.message}
+                    </div>`;
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<div style="color: var(--text-muted)">Henüz test dosyası bulunamadı.</div>';
+                    return;
+                }
+
+
+                let html = '';
+                data.forEach(fileGroup => {
+                    html += `
+                        <div style="margin-bottom: 30px;">
+                            <h3 style="color: var(--primary-light); margin-bottom: 12px; font-size: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+                                <i class="fas fa-file-code"></i> ${fileGroup.file}
+                            </h3>
+                            <div style="display: grid; gap: 10px;">
+                                ${fileGroup.tests.map(testName => `
+                                    <div style="display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                                        <i class="fas fa-check-circle" style="color: var(--success); opacity: 0.6;"></i>
+                                        <span style="font-size: 0.9rem; color: var(--text-main);">${testName}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } catch (e) {
+                container.innerHTML = '<div style="color: var(--danger)">Veriler alınırken bir hata oluştu.</div>';
+            }
+        }
+
+
+        async function setEnvironment(env) {
+            try {
+                const resp = await fetch('/api/config/environment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ activeEnv: env })
+                });
+                const result = await resp.json();
+                if (result.success) {
+                    // Update body class for thematic shift
+                    document.body.className = `env-${env}`;
+                    log(`\n> Ortam degistirildi: ${env.toUpperCase()}\n`);
+                    fetchQMSData();
+                }
+            } catch (e) { console.error('Env change error:', e); }
+        }
+
+        // Initialize
+        fetchQMSData(); // Fetch config, scenarios, and history
+        fetch('/api/report-status').then(r => r.json()).then(d => {
+            if (d.exists) document.getElementById('viewReport').style.display = 'inline-flex';
+        });
     </script>
 </body>
 

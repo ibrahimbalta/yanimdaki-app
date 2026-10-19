@@ -34,31 +34,26 @@ test.describe('UI Bilesenleri ve Modaller', () => {
         });
         await page.waitForTimeout(1000);
 
-        const categoryBar = page.locator('#category-bar, .category-filter-bar').first();
-        if (await categoryBar.count() > 0) {
-            await expect(categoryBar).toBeVisible();
+        const categoryItem = page.locator('.cat-side-item, .cat-item').first();
+        if (await categoryItem.count() > 0) {
+            await expect(categoryItem).toBeVisible();
         }
     });
 
     test('vitrin galerisi bolumu DOM da mevcut', async ({ page }) => {
-        const gallery = page.locator('#gallery-container, #gallery-wrapper').first();
+        const gallery = page.locator('#hero-slider, #esnaf-carousel, .hero-slider').first();
         expect(await gallery.count()).toBeGreaterThan(0);
     });
 
     test('yan menu butonu ile side menu acilir', async ({ page }) => {
         // Hamburger butonunu bul (header icinde)
-        const menuBtn = page.locator('header .hamburger, header [onclick*="toggleSideMenu"], #side-menu-btn, .side-menu-toggle').first();
+        const menuBtn = page.locator('.hamburger-btn, [onclick*="toggleSideMenu"]').first();
         if (await menuBtn.count() > 0 && await menuBtn.isVisible()) {
             await menuBtn.click();
             await page.waitForTimeout(500);
 
-            const sideMenu = page.locator('#side-menu, .side-menu').first();
-            if (await sideMenu.count() > 0) {
-                const isOpen = await sideMenu.evaluate(el => {
-                    return el.classList.contains('open') || el.classList.contains('active') || el.style.transform.includes('0');
-                });
-                expect(isOpen).toBeTruthy();
-            }
+            const sideMenu = page.locator('#side-menu').first();
+            await expect(sideMenu).toBeVisible();
         }
     });
 

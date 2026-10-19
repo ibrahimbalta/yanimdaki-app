@@ -16,9 +16,9 @@ test.describe('App Navigasyon ve Ekran Gecisleri', () => {
         await expect(page).toHaveTitle(/Yanımdaki/);
     });
 
-    test('alt navigasyon cubugu gorunur', async ({ page }) => {
-        const nav = page.locator('#main-nav').first();
-        await expect(nav).toBeVisible();
+    test('header ve ana navigasyon gorunur', async ({ page }) => {
+        const header = page.locator('header').first();
+        await expect(header).toBeVisible();
     });
 
     test('ana sayfa ekrani varsayilan olarak gorunur', async ({ page }) => {

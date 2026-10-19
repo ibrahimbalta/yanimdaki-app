@@ -1,0 +1,10 @@
+node_modules
+allure-results
+allure-report
+playwright-report
+test-results
+cloud-reports
+.git
+.env
+Dockerfile
+.dockerignore

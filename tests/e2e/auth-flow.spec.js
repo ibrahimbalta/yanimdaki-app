@@ -35,11 +35,9 @@ test.describe('Giris ve Kayit Akislari', () => {
         });
         await page.waitForTimeout(500);
 
-        // Login ekranindaki phone input'u sec
-        const phoneInput = page.locator('#screen-login input[type="tel"], #screen-login input[id*="phone"]').first();
-        if (await phoneInput.count() > 0) {
-            await expect(phoneInput).toBeVisible();
-        }
+        // Yeni tasarimda input class'lari degismis olabilir, kapsayici üzerinden git
+        const phoneInput = page.locator('#screen-login input').first();
+        await expect(phoneInput).toBeVisible();
     });
 
     test('kayit (register) tab butonu calisiyor', async ({ page }) => {
