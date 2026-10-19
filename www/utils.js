@@ -112,25 +112,38 @@ const utils = {
     },
 
     /**
-     * Görselleri istemci tarafında sıkıştırır
+     * Görselleri istemci tarafında yüksek verimlilikle (WebP) sıkıştırır.
+     * File, Blob veya base64 string kabul eder.
      */
-    compressImage: function (base64Str, maxWidth = 1024, maxHeight = 1024, quality = 0.7) {
-        return new Promise((resolve) => {
+    compressImage: function (input, maxWidth = 800, maxHeight = 800, quality = 0.65) {
+        return new Promise((resolve, reject) => {
             const img = new Image();
-            img.src = base64Str;
+            let objectUrl = null;
+
+            if (input instanceof Blob || (typeof File !== 'undefined' && input instanceof File)) {
+                objectUrl = URL.createObjectURL(input);
+                img.src = objectUrl;
+            } else if (typeof input === 'string') {
+                img.src = input;
+            } else {
+                return reject(new Error('Geçersiz görsel verisi'));
+            }
+
             img.onload = () => {
+                if (objectUrl) URL.revokeObjectURL(objectUrl);
+
                 const canvas = document.createElement('canvas');
                 let width = img.width;
                 let height = img.height;
 
                 if (width > height) {
                     if (width > maxWidth) {
-                        height *= maxWidth / width;
+                        height = Math.round(height * (maxWidth / width));
                         width = maxWidth;
                     }
                 } else {
                     if (height > maxHeight) {
-                        width *= maxHeight / height;
+                        width = Math.round(width * (maxHeight / height));
                         height = maxHeight;
                     }
                 }
@@ -141,7 +154,19 @@ const utils = {
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
                 ctx.drawImage(img, 0, 0, width, height);
-                resolve(canvas.toDataURL('image/jpeg', quality));
+
+                // WebP desteğini dene, desteklenmiyorsa JPEG fallback
+                let output = canvas.toDataURL('image/webp', quality);
+                if (!output || !output.startsWith('data:image/webp')) {
+                    output = canvas.toDataURL('image/jpeg', quality);
+                }
+
+                resolve(output);
+            };
+
+            img.onerror = (err) => {
+                if (objectUrl) URL.revokeObjectURL(objectUrl);
+                reject(err || new Error('Görsel yüklenemedi'));
             };
         });
     },
@@ -214,7 +239,10 @@ const utils = {
     }
 };
 
-// Jest/Node ortamı desteği
+// Browser & Node environment support
+if (typeof window !== 'undefined') {
+    window.utils = utils;
+}
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = utils;
 }

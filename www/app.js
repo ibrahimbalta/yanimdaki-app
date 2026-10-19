@@ -4922,14 +4922,8 @@ Object.assign(app, {
 
         for (let f of files) {
             try {
-                const base64 = await new Promise((resolve, reject) => {
-                    const r = new FileReader();
-                    r.onload = ev => resolve(ev.target.result);
-                    r.onerror = err => reject(err);
-                    r.readAsDataURL(f);
-                });
-
-                const compressed = await this.utils.compressImage(base64);
+                // Doğrudan File nesnesini WebP olarak sıkıştır (RAM tasarrufu)
+                const compressed = await this.utils.compressImage(f, 800, 800, 0.65);
                 this.state.selectedImages.push(compressed);
             } catch (err) {
                 console.error("Görsel işleme hatası:", err);
@@ -6229,19 +6223,7 @@ Object.assign(app, {
     },
 
     uploadImage: async function (file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const compressed = await this.utils.compressImage(e.target.result);
-                    resolve(compressed);
-                } catch (err) {
-                    reject(err);
-                }
-            };
-            reader.onerror = (err) => reject(err);
-            reader.readAsDataURL(file);
-        });
+        return this.utils.compressImage(file, 800, 800, 0.65);
     },
 
     submitQuickDeal: async function () {
