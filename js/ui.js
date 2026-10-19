@@ -1,4 +1,4 @@
-﻿window.app = window.app || {};
+window.app = window.app || {};
 
 Object.assign(app, {
     renderProducts: function () {
@@ -1421,10 +1421,13 @@ Object.assign(app, {
         const product = this.state.products.find(p => p.id === this.currentProductId);
         if (!product) return;
 
-        const productUrl = window.location.origin + window.location.pathname + '?p=' + product.id;
+        const productUrl = 'https://yanimdaki.com/app.html?p=' + product.id;
+        const priceText = product.isFree ? 'Ücretsiz (Hediye 🌱)' : `${product.price} ₺`;
+        const locationText = product.neighborhood ? `${product.neighborhood}, ${product.district || ''}` : 'Mahallende';
+        
         const shareData = {
-            title: product.title + ' - Yanımdaki',
-            text: `${product.title} - ${product.price}₺ fiyatıyla Yanımdaki'de seni bekliyor!`,
+            title: `${product.title} - Yanımdaki`,
+            text: `📍 ${locationText} | ${product.title} (${priceText})\nYanımdaki uygulamasında komşundan hemen al veya incele:`,
             url: productUrl
         };
 
@@ -1438,8 +1441,8 @@ Object.assign(app, {
             }
         } else {
             try {
-                await navigator.clipboard.writeText(productUrl);
-                this.toast('Ürün bağlantısı kopyalandı! 📋');
+                await navigator.clipboard.writeText(`${shareData.text}\n${productUrl}`);
+                this.toast('İlan bağlantısı ve detayları kopyalandı! WhatsApp veya Instagramda paylaşabilirsiniz. 📋✨');
             } catch (err) {
                 this.toast('Bağlantı kopyalanamadı.', 'error');
             }

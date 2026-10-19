@@ -5,13 +5,6 @@ Object.assign(app, {
         const container = document.getElementById('product-list');
         if (!container) return;
 
-        // EĞER ÜRÜNLER HENÜZ YÜKLENMEDİYSE VEYA BOŞSA (VE YÜKLENİYORSA): Skeleton Göster
-        if (this.state.products.length === 0 && !this._firstLoadDone) {
-            this.renderSkeletons();
-            this._firstLoadDone = true; // Sadece ilk girişte göster
-            return;
-        }
-
         // --- Koruma: Kullanıcı oturumu yoksa veya konum bilgisi henüz gelmediyse varsayılan ata ---
         const userLat = (this.state.user && this.state.user.location) ? this.state.user.location.lat : 41.0082;
         const userLng = (this.state.user && this.state.user.location) ? this.state.user.location.lng : 28.9784;
@@ -21,11 +14,14 @@ Object.assign(app, {
         const cacheKey = `${userLat}_${userLng}_${this.state.products.length}`;
 
         const productsWithDistance = this.state.products.map(p => {
-            const pKey = `${p.id}_${p.lat}_${p.lng}`;
+            const pLat = p.lat || p.location?.lat;
+            const pLng = p.lng || p.location?.lng;
+            const pKey = `${p.id}_${pLat}_${pLng}`;
+
             if (this._distanceCache[cacheKey] && this._distanceCache[cacheKey][pKey]) {
                 return { ...p, _calculatedDistance: this._distanceCache[cacheKey][pKey] };
             }
-            const dist = this.utils.calculateDistance(userLat, userLng, p.lat, p.lng);
+            const dist = this.utils.calculateDistance(userLat, userLng, pLat, pLng);
             if (!this._distanceCache[cacheKey]) this._distanceCache[cacheKey] = {};
             this._distanceCache[cacheKey][pKey] = dist;
             return { ...p, _calculatedDistance: dist };
@@ -41,7 +37,17 @@ Object.assign(app, {
                 shopName.toLowerCase().includes(searchLower);
             const matchesCategory = this.state.filters.category === 'all' || p.category === this.state.filters.category;
 
-            const isExpired = this.utils.isProductExpired(p);
+            const expiresAt = (() => {
+                if (p.expiresAt) return (p.expiresAt.toDate) ? p.expiresAt.toDate() : new Date(p.expiresAt);
+                const baseTime = (p.republishedAt || p.createdAt);
+                if (baseTime) {
+                    const date = (baseTime.toDate) ? baseTime.toDate() : new Date(baseTime);
+                    const finalDate = isNaN(date.getTime()) ? new Date() : date;
+                    return new Date(finalDate.getTime() + 24 * 60 * 60 * 1000);
+                }
+                return new Date(Date.now() + 24 * 60 * 60 * 1000);
+            })();
+            const isExpired = expiresAt < new Date();
             const isOwner = (this.state.user && p.ownerId === this.state.user.uid) || (this.state.user && p.ownerPhone && p.ownerPhone === this.state.user.phone);
 
             const f = this.state.filters;
@@ -61,9 +67,10 @@ Object.assign(app, {
             const matchesOnlySurprise = f.onlySurprise ? p.isSurprise === true : true;
             const isFree = (p.price === 0 || !p.price || p.isFree);
             const matchesService = this.state.filters.onlyService ? (p.category === 'Hizmetler' || p.category === 'Usta & Yardım') : true;
+            const matchesSwap = this.state.filters.onlySwap ? p.isSwap === true : true;
             const matchesAskida = this.state.filters.onlyAskida ? isFree : true;
 
-            return !isSold && !isExpired && matchesSearch && matchesCategory && matchesPrice && matchesCondition && matchesLocation && matchesOnlyFree && matchesOnlyBulk && matchesOnlySurprise && matchesService && matchesAskida && matchesOnlyEsnaf;
+            return !isSold && !isExpired && matchesSearch && matchesCategory && matchesPrice && matchesCondition && matchesLocation && matchesOnlyFree && matchesOnlyBulk && matchesOnlySurprise && matchesService && matchesSwap && matchesAskida && matchesOnlyEsnaf;
         }).sort((a, b) => {
             const sortBy = this.state.filters.sortBy || 'distance';
 
@@ -110,25 +117,40 @@ Object.assign(app, {
         container.innerHTML = filtered.map((p, index) => {
             const d = p._calculatedDistance;
 
-            const expiresAt = this.utils.getProductExpiry(p);
+            const expiresAt = (() => {
+                let realExp = null;
+                if (p.expiresAt) realExp = (p.expiresAt.toDate) ? p.expiresAt.toDate() : new Date(p.expiresAt);
+                else if (p.createdAt) {
+                    const created = (p.createdAt.toDate) ? p.createdAt.toDate() : new Date(p.createdAt);
+                    realExp = new Date(created.getTime() + 24 * 60 * 60 * 1000);
+                } else {
+                    realExp = new Date(Date.now() + 24 * 60 * 60 * 1000);
+                }
+
+                const now = new Date();
+                const diff = realExp - now;
+                const oneDay = 24 * 60 * 60 * 1000;
+
+                if (diff > oneDay) {
+                    // 24 saatten fazlaysa, döngüsel (24 saatlik dilimler) olarak göster
+                    const displayDiff = diff % oneDay || oneDay;
+                    return new Date(now.getTime() + displayDiff);
+                }
+                return realExp;
+            })();
 
             const getCountdownHtml = (expires) => {
-                if (!expires) return '';
                 const diff = expires - new Date();
-                if (diff <= 0) return '<span class="countdown-badge expired"><i class="fas fa-clock"></i> Süresi Doldu</span>';
+                if (diff <= 0) return '<span class="countdown-badge expired"><i class="fas fa-clock"></i> SÃ¼resi Doldu</span>';
 
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const hours = Math.floor(diff / (1000 * 60 * 60));
                 const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const isUrgent = hours < 1;
+                const label = p.vitrine ? 'Vitrin' : '';
+                const titleAttr = p.vitrine ? 'Vitrin/Sponsorlu İlan Süresi' : 'Kalan Süre';
 
-                let timeStr = "";
-                if (days > 0) timeStr = `${days}g ${hours}s`;
-                else timeStr = `${hours > 0 ? hours + 's ' : ''}${mins}dk`;
-
-                const isUrgent = days === 0 && hours < 1;
-
-                return `<span class="countdown-badge ${isUrgent ? 'urgent' : ''}" data-expires="${expires.getTime()}">
-                    <i class="fas fa-clock"></i> ${timeStr}
+                return `<span class="countdown-badge ${isUrgent ? 'urgent' : ''} ${p.vitrine ? 'vitrine' : ''}" data-expires="${expires.getTime()}" title="${titleAttr}">
+                    <i class="fas ${p.vitrine ? 'fa-gem' : 'fa-clock'}"></i> ${label} ${hours > 0 ? hours + 's ' : ''}${mins}dk
                 </span>`;
             };
 
@@ -137,32 +159,36 @@ Object.assign(app, {
             const isExpired = expiresAt && (expiresAt - new Date() < 0);
 
             // Fiyat hesaplama
-            let currentPrice = parseFloat(p.price) || 0;
-            let oldPrice = parseFloat(p.oldPrice || p.initialPrice) || 0;
-            if (isNaN(currentPrice)) currentPrice = 0;
-            if (isNaN(oldPrice)) oldPrice = 0;
-
+            const currentPrice = p.price || 0;
+            const oldPrice = p.oldPrice || p.initialPrice || 0;
             let priceHtml = '';
             if (oldPrice > 0 && currentPrice < oldPrice) {
-                priceHtml = `<span class="old-price">${oldPrice}₺</span>${currentPrice}₺`;
+                priceHtml = `<span class="old-price">${this.utils.formatPrice(oldPrice)}₺</span>${this.utils.formatPrice(currentPrice)}₺`;
             } else {
-                priceHtml = p.isFree ? 'Hediye' : (p.isNegotiable ? 'Teklif' : currentPrice + '₺');
+                priceHtml = p.isFree ? 'Hediye' : (p.isNegotiable ? 'Teklif' : this.utils.formatPrice(currentPrice) + '₺');
             }
 
-            // Özellik İkonları (Çoklu)
+            // Ã–zellik Ä°konlarÄ± (Ã‡oklu)
             let featureIconsHtml = '<div class="card-features-wrapper">';
 
             if (p.isEsnaf) {
                 featureIconsHtml += `<div class="feature-icon-circle esnaf" title="Esnaf İlanı"><i class="fas fa-store"></i></div>`;
             }
-            if (p.isFree || p.price === 0) {
+            if ((p.isFree || p.price === 0) && !p.isSwap) {
                 featureIconsHtml += `<div class="feature-icon-circle paylas" title="Hediye/Paylaş"><i class="fas fa-leaf"></i></div>`;
             }
             if (p.isAskida || p.category === 'askida' || p.category === 'Askıda') {
                 featureIconsHtml += `<div class="feature-icon-circle askida" title="Askıda"><i class="fas fa-hand-holding-heart"></i></div>`;
             }
+            let rescueBadgeHtml = '';
             if (p.isSurprise || p.category === 'surpriz-paket') {
-                featureIconsHtml += `<div class="feature-icon-circle israf" title="İsrafı Önle"><i class="fas fa-box"></i></div>`;
+                const now = new Date();
+                const isRescueHour = now.getHours() >= 20 || now.getHours() < 2;
+                if (isRescueHour) {
+                    rescueBadgeHtml = `<div class="rescue-badge-premium" title="İSRAFI ÖNLE"><i class="fas fa-hand-holding-heart"></i> KURTAR</div>`;
+                } else {
+                    featureIconsHtml += `<div class="feature-icon-circle israf" title="İsrafı Önle"><i class="fas fa-box"></i></div>`;
+                }
             }
             if (p.isService || p.category === 'Hizmetler' || p.category === 'Usta & Yardım') {
                 featureIconsHtml += `<div class="feature-icon-circle hizmet" title="Hizmet"><i class="fas fa-tools"></i></div>`;
@@ -185,6 +211,7 @@ Object.assign(app, {
             if (p.delivery) {
                 const deliveryIcons = {
                     'kapidan': { icon: 'fa-door-open', label: 'Kapıdan Teslim' },
+                    'kapiya-birak': { icon: 'fa-box', label: 'Kapıya Bırak (Curb-side)' },
                     'ortak-nokta': { icon: 'fa-map-pin', label: 'Ortak Nokta' },
                     'gel-al': { icon: 'fa-shop', label: 'Gel-Al (Dükkan)' }
                 };
@@ -197,11 +224,11 @@ Object.assign(app, {
             // Deal badge (Sadece Esnaf ve indirim varsa - opsiyonel, sağda kalabilir)
             let dealBadgeHtml = '';
             if (p.isEsnaf && p.dealType && p.dealType !== 'none') {
-                const labels = { indirim: 'İNDİRİM', serisonu: 'SERİ SONU', teshir: 'TEŞHİR' };
+                const labels = { indirim: 'Ä°NDÄ°RÄ°M', serisonu: 'SERÄ° SONU', teshir: 'TEÅHÄ°R' };
                 dealBadgeHtml = `<span class="esnaf-compact-deal-badge">${labels[p.dealType]}</span>`;
             }
 
-            // Favori kontrolü
+            // Favori kontrolÃ¼
             const isFav = this.state.favorites && this.state.favorites.includes(p.id);
 
             // Rating hesaplama
@@ -234,6 +261,7 @@ Object.assign(app, {
                     </button>
                     <div class="esnaf-compact-img" style="background-image: url('${this.utils.getProductImage(p)}');">
                         ${featureIconsHtml}
+                        ${rescueBadgeHtml}
                         ${dealBadgeHtml}
                         <span class="esnaf-compact-price-tag"><i class="fas fa-location-dot" style="font-size:0.7rem; margin-right:4px;"></i> ${priceHtml}</span>
                     </div>
@@ -241,10 +269,21 @@ Object.assign(app, {
                         <div class="esnaf-compact-title">
                             ${this.utils.escapeHTML(p.title)}
                         </div>
+                        ${p.isSwap && p.takasWish ? `
+                            <div class="card-takas-wish">
+                                <i class="fas fa-right-left"></i>
+                                <span>${this.utils.escapeHTML(p.takasWish)}</span>
+                            </div>
+                        ` : ''}
+                        ${p.dealType && p.dealType !== 'none' ? `
+                            <div class="esnaf-deal-label-red">
+                                ${p.dealType === 'indirim' ? 'İNDİRİM' : (p.dealType === 'serisonu' ? 'SERİ SONU' : 'TEŞHİR ÜRÜNÜ')}
+                            </div>
+                        ` : ''}
                         <div class="esnaf-compact-location">
                             <div class="esnaf-location-left">
                                 <i class="fas fa-location-dot"></i>
-                                <span>${this.utils.escapeHTML(p.city || 'Yakınında')}</span>
+                                <span>${this.utils.escapeHTML(p.city || '')} ${this.utils.escapeHTML(p.district || '')}</span>
                             </div>
                             <div class="esnaf-location-right">
                                 <i class="fas fa-route"></i>
@@ -252,6 +291,33 @@ Object.assign(app, {
                             </div>
                         </div>
                         ${starsHtml}
+                        
+                        ${(() => {
+                    const now = new Date();
+                    const isRescueHour = (now.getHours() >= 20 || now.getHours() < 2);
+                    if ((p.isSurprise || p.category === 'surpriz-paket') && isRescueHour) {
+                        // Progress Bar Hesaplama (20:00 -> 02:00 = 6 saatlik periyot)
+                        let startTime = new Date(); startTime.setHours(20, 0, 0);
+                        if (now.getHours() < 20) startTime.setDate(startTime.getDate() - 1);
+
+                        let endTime = new Date(startTime.getTime() + (6 * 3600000));
+                        const total = endTime - startTime;
+                        const elapsed = now - startTime;
+                        const percent = Math.max(0, Math.min(100, 100 - (elapsed / total * 100)));
+
+                        return `
+                                    <div class="rescue-progress-container">
+                                        <div class="rescue-progress-bar" style="width: ${percent}%"></div>
+                                    </div>
+                                    <div class="rescue-timer-text">
+                                        <span>♻️ İsrafı Önle</span>
+                                        <span>${Math.round(percent)}% kaldı</span>
+                                    </div>
+                                `;
+                    }
+                    return '';
+                })()}
+
                         ${p.isEsnaf ? `
                         <div class="esnaf-compact-shop" style="display: flex; align-items: center; gap: 4px;">
                             <i class="fas fa-store"></i>
@@ -272,38 +338,89 @@ Object.assign(app, {
         }).join('');
 
         this.renderEsnafCarousel();
-        this.startGlobalTimers(); // Sayaçları başlat
+        this.startGlobalTimers(); // SayaÃ§larÄ± baÅŸlat
+        if (typeof this.updateLiveRadar === 'function') {
+            this.updateLiveRadar();
+        }
     },
 
     renderHeroSlider: function () {
-        // Original slider logic (now hidden in index.html, but keeping JS for compatibility)
         const slider = document.getElementById('hero-slider');
+        const dotsContainer = document.getElementById('hero-dots');
         if (!slider) return;
-        // ... (rest of the logic is same)
-        this.renderMahallePazarı(); // Tetikle
+
+        const banners = this.state.banners || [];
+
+        if (banners.length === 0) {
+            // Default announcement if no banners
+            slider.innerHTML = `
+                <div class="hero-slide active">
+                    <div class="pazar-section-header" style="margin-bottom: 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                                    <span class="pazar-badge-daily" style="background: rgba(255,255,255,0.2);">DUYURU</span>
+                                </div>
+                                <h2 style="font-size: 1.5rem; font-weight: 800; color: white; margin: 0;">Yanımdaki'ne Hoş Geldin!</h2>
+                                <p style="margin: 4px 0 0 0; font-size: 0.8rem; color: rgba(255,255,255,0.9); font-weight: 500;">
+                                    Mahallendeki güncel duyuru ve fırsatları buradan takip edebilirsin.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            if (dotsContainer) dotsContainer.innerHTML = '';
+            return;
+        }
+
+        slider.innerHTML = banners.map((b, i) => `
+            <div class="hero-slide ${i === 0 ? 'active' : ''}" onclick="${b.link ? `window.open('${b.link}', '_blank')` : ''}" style="cursor: ${b.link ? 'pointer' : 'default'}">
+                <div class="hero-slide-content">
+                    <img src="${b.image}" class="hero-slide-img" alt="${b.title || 'Banner'}">
+                    <div class="hero-slide-overlay">
+                        ${b.title ? `<h2 style="font-size: 1.4rem; font-weight: 800; margin: 0;">${b.title}</h2>` : ''}
+                        ${b.subtitle ? `<p style="font-size: 0.85rem; opacity: 0.9; margin: 4px 0 0 0; font-weight: 500;">${b.subtitle}</p>` : ''}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        if (dotsContainer) {
+            dotsContainer.innerHTML = banners.map((_, i) => `
+                <div class="hero-dot ${i === 0 ? 'active' : ''}" onclick="app.goToBannerSlide(${i})"></div>
+            `).join('');
+        }
+
+        this.state.currentBannerSlide = 0;
+        this.clearHeroSliderInterval();
+
+        if (banners.length > 1) {
+            this._heroSliderInterval = setInterval(() => {
+                this.nextBannerSlide();
+            }, 6000); // 6 saniyeye çıkarıldı, daha rahat okunması için
+        }
     },
 
     renderMahallePazarı: function () {
         const container = document.getElementById('pazar-items-container');
         if (!container) return;
 
-        if (this.state.products.length === 0 && !this._pazarFirstLoadDone) {
-            this.renderPazarSkeletons();
-            this._pazarFirstLoadDone = true;
-            return;
-        }
-
         const now = new Date();
         const todayStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
 
-        // Filter and Sort: Active + Not Expired + City Match + Neighborhood priority
-        const pazarItems = (this.state.products || []).filter(p =>
-            p.isDailyPazar === true &&
-            p.status === 'active' &&
-            !this.utils.isProductExpired(p) &&
-            !this.state.offers.some(o => o.productId === p.id && o.status === 'accepted') &&
-            (this.state.filters.city === 'all' || p.city === this.state.filters.city)
-        ).sort((a, b) => {
+        // Filter and Sort: Today only + City Match + Neighborhood priority + Latest first
+        const pazarItems = (this.state.products || []).filter(p => {
+            const isBasePazar = p.isDailyPazar === true && !this.utils.isProductExpired(p);
+
+            // "İsrafı Önle" Logic: After 20:00, show surprise packages
+            const isRescueHour = now.getHours() >= 20 || now.getHours() < 2;
+            const isRescueAd = (p.isSurprise || p.category === 'surpriz-paket') && isRescueHour;
+
+            const isMatchingCity = (this.state.filters.city === 'all' || p.city === this.state.filters.city);
+            const isActive = p.status === 'active' && !this.state.offers.some(o => o.productId === p.id && o.status === 'accepted');
+
+            return (isBasePazar || isRescueAd) && isActive && isMatchingCity;
+        }).sort((a, b) => {
             // Neighborhood priority
             const myNeighborhood = this.state.user ? this.state.user.neighborhood : '';
             if (a.neighborhood === myNeighborhood && b.neighborhood !== myNeighborhood) return -1;
@@ -317,14 +434,14 @@ Object.assign(app, {
 
         if (pazarItems.length === 0) {
             container.innerHTML = `
-                <div class="vitrine-placeholder-card" onclick="app.openPazarAddModal()" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-color: #f59e0b; min-width: 100%;">
-                    <div class="vitrine-placeholder-icon" style="color: #f59e0b; background: white;">
-                        <i class="fas fa-basket-shopping"></i>
+                <div class="vitrine-placeholder-card" onclick="app.openPazarAddModal()" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-color: #f59e0b; min-width: 100%; height: 160px; display: flex; align-items: center; justify-content: center; border-radius: 20px;">
+                    <div class="vitrine-placeholder-icon" style="color: #f59e0b; background: white; width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 16px;">
+                        <i class="fas fa-basket-shopping" style="font-size: 1.5rem;"></i>
                     </div>
                     <div class="vitrine-placeholder-content">
-                        <h4 style="color: #92400e;">Mahalle Pazarı</h4>
-                        <p style="color: #b45309;">Henüz ürün yok. İlk ürünü ekleyerek pazarı siz başlatın!</p>
-                        <span class="vitrine-placeholder-cta" style="color: #f59e0b;">Ürün Ekle <i class="fas fa-plus"></i></span>
+                        <h4 style="color: #92400e; margin: 0; font-size: 1rem; font-weight: 800;">Mahalle Pazarı Boş</h4>
+                        <p style="color: #b45309; margin: 4px 0 8px 0; font-size: 0.8rem; font-weight: 500;">Henüz ürün yok. İlk ürünü siz ekleyin!</p>
+                        <span class="vitrine-placeholder-cta" style="color: #f59e0b; font-weight: 800; font-size: 0.75rem;">Ürün Ekle <i class="fas fa-plus"></i></span>
                     </div>
                 </div>
             `;
@@ -336,11 +453,12 @@ Object.assign(app, {
 
             return `
                 <div class="pazar-premium-card" onclick="app.showProductDetails('${item.id}')">
-                    <img src="${item.image}" loading="lazy" style="width: 100%; height: 130px; object-fit: cover;">
+                    <img src="${this.utils.getProductImage(item)}" style="width: 100%; height: 130px; object-fit: cover;">
                     
                     <div style="position: absolute; top: 10px; right: 10px; z-index: 5;">
                         <span style="background: rgba(255,255,255,0.9); color: var(--pazar-amber); padding: 4px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 800; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                            ${item.price} TL
+                            ${item.oldPrice && item.oldPrice > item.price ? `<span style="text-decoration:line-through; font-size: 0.6rem; opacity: 0.6; margin-right: 3px;">${item.oldPrice}</span>` : ''}
+                            ${item.price}₺
                         </span>
                     </div>
 
@@ -348,13 +466,19 @@ Object.assign(app, {
                         <h4 style="margin: 0; font-size: 0.9rem; font-weight: 700; color: #1e293b; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.2em;">
                             ${this.utils.escapeHTML(item.title)}
                         </h4>
+                        ${item.isSwap && item.takasWish ? `
+                            <div class="card-takas-wish" style="margin-top: 4px;">
+                                <i class="fas fa-right-left"></i>
+                                <span>${this.utils.escapeHTML(item.takasWish)}</span>
+                            </div>
+                        ` : ''}
                         
                         <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 8px;">
                             <div style="display: flex; align-items: center; gap: 6px;">
                                 <div style="width: 16px; height: 16px; background: #f1f5f9; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
                                     <i class="fas fa-location-dot" style="font-size: 0.6rem; color: #64748b;"></i>
                                 </div>
-                                <span style="font-size: 0.7rem; color: #64748b; font-weight: 600;">${item.neighborhood || 'Mahallende'}</span>
+                                <span style="font-size: 0.7rem; color: #64748b; font-weight: 600;">${item.city && item.district ? item.city + '-' + item.district : (item.neighborhood || 'Mahallende')}</span>
                             </div>
 
                             <div style="display: flex; align-items: center; gap: 6px;">
@@ -369,7 +493,7 @@ Object.assign(app, {
                     </div>
 
                     ${isVeryNew ? `
-                        <div style="position: absolute; bottom: 8px; left: 12px; display: flex; align-items: center; gap: 4px;">
+                        <div style="position: absolute; bottom: 8px; right: 12px; display: flex; align-items: center; gap: 4px;">
                             <div class="pazar-live-dot"></div>
                             <span style="font-size: 0.6rem; font-weight: 800; color: #ef4444; letter-spacing: 0.5px;">ŞİMDİ</span>
                         </div>
@@ -378,13 +502,13 @@ Object.assign(app, {
             `;
         }).join('');
 
-        // --- Otomatik Kaydırma (Auto-scroll) Mantığı ---
+        // --- Otomatik KaydÄ±rma (Auto-scroll) MantÄ±ÄŸÄ± ---
         if (this._pazarInterval) clearInterval(this._pazarInterval);
 
         const startAutoScroll = () => {
             if (!container || container.children.length <= 1) return;
             this._pazarInterval = setInterval(() => {
-                const scrollStep = 200; // Yaklaşık bir kart genişliği + gap
+                const scrollStep = 200; // YaklaÅŸÄ±k bir kart geniÅŸliÄŸi + gap
                 const maxScroll = container.scrollWidth - container.clientWidth;
 
                 if (container.scrollLeft >= maxScroll - 10) {
@@ -397,7 +521,7 @@ Object.assign(app, {
 
         startAutoScroll();
 
-        // Etkileşim duraklatma (Hover & Touch)
+        // EtkileÅŸim duraklatma (Hover & Touch)
         container.onmouseenter = () => clearInterval(this._pazarInterval);
         container.onmouseleave = () => startAutoScroll();
         container.ontouchstart = () => clearInterval(this._pazarInterval);
@@ -433,8 +557,13 @@ Object.assign(app, {
     nextBannerSlide: function () {
         const total = this.state.banners.length;
         if (total === 0) return;
-        this.state.currentBannerSlide = (this.state.currentBannerSlide + 1) % total;
-        this.updateBannerSlide();
+        this.goToBannerSlide((this.state.currentBannerSlide + 1) % total);
+    },
+
+    prevBannerSlide: function () {
+        const total = this.state.banners.length;
+        if (total === 0) return;
+        this.goToBannerSlide((this.state.currentBannerSlide - 1 + total) % total);
     },
 
     goToBannerSlide: function (index) {
@@ -445,7 +574,7 @@ Object.assign(app, {
         if (this.state.banners.length > 1) {
             this._heroSliderInterval = setInterval(() => {
                 this.nextBannerSlide();
-            }, 5000);
+            }, 6000);
         }
     },
 
@@ -467,7 +596,7 @@ Object.assign(app, {
         const section = document.getElementById('esnaf-carousel-container');
         if (!container || !section) return;
 
-        // 1. Admin panelinden seçilen esnaf vitrin ürünlerini al
+        // 1. Admin panelinden seÃ§ilen esnaf vitrin Ã¼rÃ¼nlerini al
         const curatedEsnafItems = (this.state.galleryItems || [])
             .filter(item => item.vitrineType === 'esnaf')
             .filter(item => !item.expiresAt || item.expiresAt.seconds >= firebase.firestore.Timestamp.now().seconds)
@@ -475,7 +604,7 @@ Object.assign(app, {
 
         const curatedEsnafIds = curatedEsnafItems.map(item => item.productId);
 
-        // 2. Seçilen ürünleri tüm ürünler içinden bul (isEsnaf olsun olmasın)
+        // 2. SeÃ§ilen Ã¼rÃ¼nleri tÃ¼m Ã¼rÃ¼nler iÃ§inden bul (isEsnaf olsun olmasÄ±n)
         const curatedAds = curatedEsnafItems
             .map(item => this.state.products.find(p => p.id === item.productId))
             .filter(p => p !== undefined)
@@ -484,8 +613,15 @@ Object.assign(app, {
                 if (isSold) return false;
                 if ((p.status || 'active') !== 'active') return false;
 
-                // Süre sonu kontrolü
-                const expiresAt = this.utils.getProductExpiry(p);
+                // SÃ¼re sonu kontrolÃ¼
+                const expiresAt = (() => {
+                    if (p.expiresAt) return (p.expiresAt.toDate) ? p.expiresAt.toDate() : new Date(p.expiresAt);
+                    if (p.createdAt) {
+                        const created = (p.createdAt.toDate) ? p.createdAt.toDate() : new Date(p.createdAt);
+                        return new Date(created.getTime() + 24 * 60 * 60 * 1000);
+                    }
+                    return new Date(Date.now() + 20 * 60 * 60 * 1000);
+                })();
                 if (expiresAt < new Date()) return false;
 
                 // Filtreleri uygula
@@ -498,35 +634,10 @@ Object.assign(app, {
                 return matchesSearch && matchesLocation;
             });
 
-        // 3. Otomatik esnaf ürünlerini filtrele (sadece isEsnaf === true olanlar)
-        const allEsnafProducts = this.state.products.filter(p => {
-            if (!p.isEsnaf) return false;
-            if (curatedEsnafIds.includes(p.id)) return false; // Zaten seçildi, tekrar ekleme
+        // 3. SÄ±ralama: Sadece aktif vitrin Ã¼rÃ¼nleri
+        const esnafAds = [...curatedAds];
 
-            const isSold = p.status === 'sold' || this.state.offers.some(o => o.productId === p.id && o.status === 'accepted');
-            if (isSold) return false;
-
-            const expiresAt = this.utils.getProductExpiry(p);
-
-            const isExpired = expiresAt < new Date();
-            if (isExpired) return false;
-
-            if ((p.status || 'active') !== 'active') return false;
-
-            // Filtreleri uygula
-            const searchLower = this.state.filters.searchQuery.toLowerCase();
-            const shopName = p.shopName || "";
-            const matchesSearch = p.title.toLowerCase().includes(searchLower) || shopName.toLowerCase().includes(searchLower);
-            const f = this.state.filters;
-            const matchesLocation = f.city === 'all' || p.city === f.city;
-
-            return matchesSearch && matchesLocation;
-        });
-
-        // 4. Sıralama: Önce seçilenler, sonra otomatik esnaf ürünleri
-        const esnafAds = [...curatedAds, ...allEsnafProducts];
-
-        // Vitrin boşsa CTA placeholder kartı göster
+        // Vitrin boÅŸsa CTA placeholder kartÄ± gÃ¶ster
         if (esnafAds.length === 0) {
             section.style.display = 'block';
             container.innerHTML = `
@@ -548,29 +659,27 @@ Object.assign(app, {
         section.style.display = 'block';
 
         // Kompakt kart HTML oluştur (Bireysel Vitrin tarzında)
-        container.innerHTML = esnafAds.map(p => {
-            const d = p._calculatedDistance || this.utils.calculateDistance(41.0082, 28.9784, p.lat, p.lng);
-
-            // Deal type badge hesapla
-            let dealBadgeHtml = '';
-            if (p.dealType && p.dealType !== 'none') {
-                const labels = { indirim: 'İNDİRİM', serisonu: 'SERİ SONU', teshir: 'TEŞHİR', surprise: 'SÜRPRİZ PAKET' };
-                dealBadgeHtml = `<span class="esnaf-compact-deal-badge">${labels[p.dealType] || ''}</span>`;
-            }
+        container.innerHTML = esnafAds.map(product => {
+            const d = product._calculatedDistance || this.utils.calculateDistance(41.0082, 28.9784, product.lat, product.lng);
 
             // Fiyat etiketini hesapla
+            let priceVal = parseFloat(product.price) || 0;
+            let oldPriceVal = parseFloat(product.oldPrice) || 0;
+
             let priceHtml = '';
-            if (p.oldPrice && p.oldPrice > 0 && p.price < p.oldPrice) {
-                priceHtml = `<span class="old-price">${p.oldPrice}₺</span>${p.price}₺`;
+            if (product.isNegotiable) {
+                priceHtml = `TEKLİF 🤝`;
+            } else if (oldPriceVal > 0 && priceVal < oldPriceVal) {
+                priceHtml = `<span class="old-price">${this.utils.formatPrice(oldPriceVal)}₺</span>${this.utils.formatPrice(priceVal)}₺`;
             } else {
-                priceHtml = `${p.price}₺`;
+                priceHtml = `${product.isFree ? 'Hediye' : this.utils.formatPrice(priceVal) + '₺'}`;
             }
 
             // Favori kontrolü
-            const isFav = this.state.favorites && this.state.favorites.includes(p.id);
+            const isFav = this.state.favorites && this.state.favorites.includes(product.id);
 
             // Rating hesaplama
-            const productRatings = this.state.ratings.filter(r => r.productId === p.id || r.userId === p.ownerId);
+            const productRatings = this.state.ratings.filter(r => r.productId === product.id || r.userId === product.ownerId);
             const avgRating = productRatings.length > 0
                 ? (productRatings.reduce((sum, r) => sum + (r.rating || 0), 0) / productRatings.length).toFixed(1)
                 : 0;
@@ -587,7 +696,15 @@ Object.assign(app, {
                 </div>
             `;
 
-            const expiresAt = this.utils.getProductExpiry(p);
+            // Geri sayım sayacı
+            const expiresAt = (() => {
+                if (product.expiresAt) return (product.expiresAt.toDate) ? product.expiresAt.toDate() : new Date(product.expiresAt);
+                if (product.createdAt) {
+                    const created = (product.createdAt.toDate) ? product.createdAt.toDate() : new Date(product.createdAt);
+                    return new Date(created.getTime() + 24 * 60 * 60 * 1000);
+                }
+                return new Date(Date.now() + 20 * 60 * 60 * 1000);
+            })();
 
             const getCountdownHtml = (expires) => {
                 if (!expires) return '';
@@ -609,76 +726,46 @@ Object.assign(app, {
                 </span>`;
             };
 
-            // Özellik İkonları (Çoklu)
-            let featureIconsHtml = '<div class="card-features-wrapper">';
-            featureIconsHtml += `<div class="feature-icon-circle esnaf" title="Esnaf İlanı"><i class="fas fa-store"></i></div>`;
-
-            if (p.isFree || p.price === 0) {
-                featureIconsHtml += `<div class="feature-icon-circle paylas" title="Hediye/Paylaş"><i class="fas fa-leaf"></i></div>`;
-            }
-            if (p.isAskida || p.category === 'askida' || p.category === 'Askıda') {
-                featureIconsHtml += `<div class="feature-icon-circle askida" title="Askıda"><i class="fas fa-hand-holding-heart"></i></div>`;
-            }
-            if (p.isSurprise || p.category === 'surpriz-paket') {
-                featureIconsHtml += `<div class="feature-icon-circle israf" title="İsrafı Önle"><i class="fas fa-box"></i></div>`;
-            }
-            if (p.isService || p.category === 'Hizmetler' || p.category === 'Usta & Yardım') {
-                featureIconsHtml += `<div class="feature-icon-circle hizmet" title="Hizmet"><i class="fas fa-tools"></i></div>`;
-            }
-            if (p.isBulk) {
-                featureIconsHtml += `<div class="feature-icon-circle toplu" title="Toplu Satış"><i class="fas fa-boxes-stacked"></i></div>`;
-            }
-            if (p.isSwap) {
-                featureIconsHtml += `<div class="feature-icon-circle takas" title="Takas Olur"><i class="fas fa-right-left"></i></div>`;
-            }
-            if (p.isNegotiable) {
-                featureIconsHtml += `<div class="feature-icon-circle teklif" title="Teklif Bekliyorum"><i class="fas fa-handshake"></i></div>`;
-            }
-            if (p.oldPrice > p.price) {
-                featureIconsHtml += `<div class="feature-icon-circle firsat" title="Fırsat"><i class="fas fa-tag"></i></div>`;
-            }
-            if (p.delivery) {
-                const deliveryIcons = {
-                    'kapidan': { icon: 'fa-door-open', label: 'Kapıdan Teslim' },
-                    'ortak-nokta': { icon: 'fa-map-pin', label: 'Ortak Nokta' },
-                    'gel-al': { icon: 'fa-shop', label: 'Gel-Al (Dükkan)' }
-                };
-                const del = deliveryIcons[p.delivery] || deliveryIcons['kapidan'];
-                featureIconsHtml += `<div class="feature-icon-circle delivery" title="${del.label}"><i class="fas ${del.icon}"></i></div>`;
-            }
-            featureIconsHtml += '</div>';
-
             const countdownHtml = getCountdownHtml(expiresAt);
 
             return `
-                <div class="esnaf-compact-card ${p.isSurprise ? 'is-surprise' : ''}" onclick="app.showProductDetails('${p.id}')">
-                    <button class="card-favorite-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); app.toggleFavorite('${p.id}')">
+                <div class="esnaf-compact-card ${product.isSurprise ? 'is-surprise' : ''}" onclick="app.showProductDetails('${product.id}')" style="min-width: 150px; scroll-snap-align: start;">
+                    <button class="card-favorite-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); app.toggleFavorite('${product.id}')">
                         <i class="${isFav ? 'fas' : 'far'} fa-heart"></i>
                     </button>
-                    <div class="esnaf-compact-img" style="background-image: url('${this.utils.getProductImage(p)}');">
-                        ${featureIconsHtml}
-                        <span class="esnaf-compact-price-tag"><i class="fas fa-location-dot" style="font-size:0.7rem; margin-right:4px;"></i> ${priceHtml}</span>
+                    <div class="esnaf-compact-img" style="background-image: url('${this.utils.getProductImage(product)}');">
+                        <span class="esnaf-compact-badge" style="background: linear-gradient(135deg, #FF8F1F, #E67E22)">
+                            <i class="fas fa-star"></i> VİTRİN
+                        </span>
+                        <span class="esnaf-compact-price-tag">${priceHtml}</span>
+                        ${product.delivery ? `
+                            <div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0, 168, 150, 0.85); color: white; width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; backdrop-filter: blur(4px); z-index: 2;">
+                                <i class="fas ${product.delivery === 'kapidan' ? 'fa-door-open' : (product.delivery === 'ortak-nokta' ? 'fa-map-pin' : 'fa-shop')}"></i>
+                            </div>
+                        ` : ''}
                     </div>
                     <div class="esnaf-compact-info">
-                        <div class="esnaf-compact-title">${this.utils.escapeHTML(p.title)}</div>
-                        <div class="esnaf-compact-location">
-                            <div class="esnaf-location-left">
-                                <i class="fas fa-location-dot"></i>
-                                <span>${this.utils.formatDistance(d)}</span>
+                        <div class="esnaf-compact-title">${this.utils.escapeHTML(product.title)}</div>
+                        ${product.dealType && product.dealType !== 'none' ? `
+                            <div class="esnaf-deal-label-red">
+                                ${product.dealType === 'indirim' ? 'İNDİRİM' : (product.dealType === 'serisonu' ? 'SERİ SONU' : 'TEŞHİR ÜRÜNÜ')}
                             </div>
+                        ` : ''}
+                        <div class="esnaf-compact-location">
+                            <i class="fas fa-location-dot"></i>
+                            <span>${this.utils.escapeHTML(product.city || 'Yakınında')}</span>
                         </div>
                         ${starsHtml}
-                        <div class="esnaf-compact-shop">
+                        <div class="esnaf-compact-shop" style="display: flex; align-items: center; gap: 4px;">
                             <i class="fas fa-store"></i>
-                            <span>${this.utils.escapeHTML(p.shopName || p.ownerName)}</span>
-                            ${p.isOwnerVerified || p.isEsnaf ? '<span class="verified-badge small" title="Onaylı Satıcı"><i class="fas fa-check-circle"></i></span>' : ''}
+                            <span>${this.utils.escapeHTML(product.shopName || product.ownerName)}</span>
+                            ${product.isEsnaf || product.isOwnerVerified ? '<span class="verified-badge small" title="Onaylı Satıcı"><i class="fas fa-check-circle"></i></span>' : ''}
                         </div>
                         ${countdownHtml}
                     </div>
                 </div>
             `;
         }).join('');
-
         this.startGlobalTimers();
     },
 
@@ -686,7 +773,27 @@ Object.assign(app, {
         const container = document.getElementById('esnaf-carousel');
         if (!container) return;
 
-        const scrollAmount = 180; // Kart genişliği + gap
+        const scrollAmount = 192; // 180px kart + 12px gap
+        const currentScroll = container.scrollLeft;
+
+        if (direction === 'left') {
+            container.scrollTo({
+                left: currentScroll - scrollAmount,
+                behavior: 'smooth'
+            });
+        } else {
+            container.scrollTo({
+                left: currentScroll + scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+    },
+
+    scrollPazar: function (direction) {
+        const container = document.getElementById('pazar-items-container');
+        if (!container) return;
+
+        const scrollAmount = 200; // Pazar kartlarÄ± biraz daha geniÅŸ olabilir
         const currentScroll = container.scrollLeft;
 
         if (direction === 'left') {
@@ -706,7 +813,7 @@ Object.assign(app, {
         const container = document.getElementById('gallery-wrapper');
         if (!container) return;
 
-        const scrollAmount = 180; // Kart genişliği + gap
+        const scrollAmount = 192; // 180px kart + 12px gap
         const currentScroll = container.scrollLeft;
 
         if (direction === 'left') {
@@ -897,21 +1004,8 @@ Object.assign(app, {
         if (viewsEl) viewsEl.textContent = totalViews > 999 ? (totalViews / 1000).toFixed(1) + 'k' : totalViews;
         if (offersEl) offersEl.textContent = incomingOffersCount;
         if (favsCountEl) favsCountEl.textContent = favsCount;
-        // Yeşil profil istatistiklerini dinamik hesapla (Bağışlanan Hediyeler & Kurtarılan Gıdalar)
-        const greenGifts = myAds.filter(p => {
-            const isSold = p.status === 'sold' || this.state.offers.some(o => o.productId === p.id && o.status === 'accepted');
-            const isFree = p.isFree || p.price === 0 || p.category === 'Askıda';
-            return isSold && isFree;
-        }).length;
-
-        const greenSurprise = myAds.filter(p => {
-            const isSold = p.status === 'sold' || this.state.offers.some(o => o.productId === p.id && o.status === 'accepted');
-            const isSurprise = p.isSurprise || p.category === 'surpriz-paket' || p.category === 'Sürpriz Paket';
-            return isSold && isSurprise;
-        }).length;
-
-        if (greenGiftsEl) greenGiftsEl.textContent = greenGifts;
-        if (greenSurpriseEl) greenSurpriseEl.textContent = greenSurprise;
+        if (greenGiftsEl) greenGiftsEl.textContent = this.state.user.greenGifts || 0;
+        if (greenSurpriseEl) greenSurpriseEl.textContent = this.state.user.greenSurprise || 0;
 
         // Fotoğraf güncelleme
         const avatarImg = document.getElementById('profile-avatar-img');
@@ -1093,19 +1187,24 @@ Object.assign(app, {
         const filtered = this.state.products.filter(p => (this.state.user && p.ownerId === this.state.user.uid) || (this.state.user && p.ownerPhone === this.state.user.phone));
         c.innerHTML = filtered.length ? filtered.map(p => {
             const isSold = p.status === 'sold' || this.state.offers.some(o => o.productId === p.id && o.status === 'accepted');
-            const priceHTML = p.isFree ? `<span class="free-price" style="color: #10B981;">Ücretsiz</span>` : `<span>${p.price}₺</span>`;
+            const priceHTML = p.isFree ? `<span class="free-price" style="color: #10B981;">Ücretsiz</span>` : (p.isNegotiable ? `<span>TEKLİF 🤝</span>` : `<span>${p.price}₺</span>`);
 
             // Özellik İkonları (Çoklu)
             let featureIconsHtml = '<div class="card-features-wrapper">';
             if (p.isEsnaf) featureIconsHtml += `<div class="feature-icon-circle esnaf" title="Esnaf İlanı"><i class="fas fa-store"></i></div>`;
-            if (p.isFree || p.price === 0) {
+            if ((p.isFree || p.price === 0) && !p.isSwap) {
                 featureIconsHtml += `<div class="feature-icon-circle paylas" title="Hediye/Paylaş"><i class="fas fa-leaf"></i></div>`;
             }
             if (p.isAskida || p.category === 'askida' || p.isAskida) {
                 featureIconsHtml += `<div class="feature-icon-circle askida" title="Askıda"><i class="fas fa-hand-holding-heart"></i></div>`;
             }
             if (p.isSurprise || p.category === 'surpriz-paket') {
-                featureIconsHtml += `<div class="feature-icon-circle israf" title="İsrafı Önle"><i class="fas fa-box"></i></div>`;
+                const now = new Date();
+                const isRescueHour = now.getHours() >= 21 || now.getHours() < 2;
+                featureIconsHtml += `<div class="feature-icon-circle israf ${isRescueHour ? 'rescue-pulse' : ''}" title="${isRescueHour ? 'CANLI KURTARMA' : 'İsrafı Önle'}"><i class="fas fa-box"></i></div>`;
+                if (isRescueHour) {
+                    featureIconsHtml += `<span class="rescue-badge-mini">KURTAR</span>`;
+                }
             }
             if (p.isService || p.category === 'Hizmetler') {
                 featureIconsHtml += `<div class="feature-icon-circle hizmet" title="Hizmet"><i class="fas fa-tools"></i></div>`;
@@ -1137,11 +1236,22 @@ Object.assign(app, {
                         <span style="font-weight:800;color:var(--primary);">${priceHTML}</span>
                     </div>
                     ${!isSold ? `
-                        <button onclick="event.stopPropagation(); app.handleVitrineButtonClick('${p.id}')" 
-                                style="width: 100%; padding: 6px; background: #fff7ed; border: 1px solid #FF8F1F; color: #FF8F1F; border-radius: 8px; font-size: 0.7rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                            <i class="fas fa-bullhorn"></i> Vitrine Ekle
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="event.stopPropagation(); app.handleVitrineButtonClick('${p.id}')" 
+                                    style="flex: 1; padding: 6px; background: #fff7ed; border: 1px solid #FF8F1F; color: #FF8F1F; border-radius: 8px; font-size: 0.7rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                                <i class="fas fa-bullhorn"></i> Vitrine
+                            </button>
+                            <button onclick="event.stopPropagation(); app.markAsSold('${p.id}')" 
+                                    style="flex: 1; padding: 6px; background: #ecfdf5; border: 1px solid #10B981; color: #10B981; border-radius: 8px; font-size: 0.7rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                                <i class="fas fa-check"></i> Satıldı
+                            </button>
+                        </div>
+                    ` : `
+                        <button onclick="event.stopPropagation(); app.republishProduct('${p.id}')" 
+                                style="width: 100%; padding: 8px; background: #eff6ff; border: 1px solid #3b82f6; color: #3b82f6; border-radius: 8px; font-size: 0.75rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <i class="fas fa-undo"></i> Geri Yükle
                         </button>
-                    ` : ''}
+                    `}
                 </div>
             </div>
             `;
@@ -1176,11 +1286,11 @@ Object.assign(app, {
                     <h3 style="font-size:0.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${this.utils.escapeHTML(p.title)}</h3>
                     <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px;">${this.utils.escapeHTML(p.city || '')}</div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight:800;color:var(--primary);">${p.price}₺</span>
+                        <span style="font-weight:800;color:var(--primary);">${p.isFree ? 'Ücretsiz' : (p.isNegotiable ? 'TEKLİF 🤝' : this.utils.formatPrice(p.price) + '₺')}</span>
                     </div>
                 </div>
             </div>
-        `).join('') : '<p style="text-align:center;padding:40px;color:var(--text-muted);grid-column:1/-1;">Favoriniz yok. ✨</p>';
+        `).join('') : '<p style="text-align:center;padding:40px;color:var(--text-muted);grid-column:1/-1;">Favoriniz yok. âœ¨</p>';
     },
 
     renderSettings: function () {
@@ -1267,11 +1377,11 @@ Object.assign(app, {
         const notifToggle = document.getElementById('settings-notif-toggle');
         const locToggle = document.getElementById('settings-loc-toggle');
         if (notifToggle) {
-            // Eğer değer hiç kaydedilmemişse (undefined), false olarak başlat
+            // EÄŸer deÄŸer hiÃ§ kaydedilmemiÅŸse (undefined), false olarak baÅŸlat
             notifToggle.checked = this.state.user.notificationsEnabled === true;
         }
         if (locToggle) {
-            // Eğer değer hiç kaydedilmemişse (undefined), false olarak başlat
+            // EÄŸer deÄŸer hiÃ§ kaydedilmemiÅŸse (undefined), false olarak baÅŸlat
             locToggle.checked = this.state.user.locationSharingEnabled === true;
         }
     },
@@ -1311,11 +1421,13 @@ Object.assign(app, {
         const product = this.state.products.find(p => p.id === this.currentProductId);
         if (!product) return;
 
-        const shareBaseUrl = window.location.hostname === 'localhost' ? window.location.origin : 'https://yanimdaki.com';
-        const productUrl = shareBaseUrl + '/ilan/' + product.id;
+        const productUrl = 'https://yanimdaki.com/app.html?p=' + product.id;
+        const priceText = product.isFree ? 'Ücretsiz (Hediye 🌱)' : `${product.price} ₺`;
+        const locationText = product.neighborhood ? `${product.neighborhood}, ${product.district || ''}` : 'Mahallende';
+        
         const shareData = {
-            title: product.title + ' - Yanımdaki',
-            text: `${product.title} - ${product.price}₺ fiyatıyla Yanımdaki'de seni bekliyor!`,
+            title: `${product.title} - Yanımdaki`,
+            text: `📍 ${locationText} | ${product.title} (${priceText})\nYanımdaki uygulamasında komşundan hemen al veya incele:`,
             url: productUrl
         };
 
@@ -1329,8 +1441,8 @@ Object.assign(app, {
             }
         } else {
             try {
-                await navigator.clipboard.writeText(productUrl);
-                this.toast('Ürün bağlantısı kopyalandı! 📋');
+                await navigator.clipboard.writeText(`${shareData.text}\n${productUrl}`);
+                this.toast('İlan bağlantısı ve detayları kopyalandı! WhatsApp veya Instagramda paylaşabilirsiniz. 📋✨');
             } catch (err) {
                 this.toast('Bağlantı kopyalanamadı.', 'error');
             }
@@ -1426,13 +1538,127 @@ Object.assign(app, {
 
     openOfferSheet: function () {
         if (!this.checkAuth('Teklif vermek için lütfen kayıt olun veya giriş yapın.')) return;
-        const sheet = document.getElementById('offer-sheet');
-        if (sheet) sheet.style.display = 'block';
+        const prod = this.state.products.find(p => p.id === this.currentProductId);
+
+        // Eğer ürün sadece takaslıksa veya takas destekliyorsa arayüzü ayarla
+        const offerSheet = document.getElementById('offer-sheet');
+        if (offerSheet) {
+            offerSheet.style.display = 'block';
+            this.setOfferType(prod && prod.isSwap ? 'swap' : 'cash');
+        }
+    },
+
+    setOfferType: function (type) {
+        this.state.currentOfferType = type;
+        const cashFields = document.getElementById('cash-offer-fields');
+        const swapFields = document.getElementById('swap-offer-fields');
+        const cashBtn = document.getElementById('btn-offer-type-cash');
+        const swapBtn = document.getElementById('btn-offer-type-swap');
+
+        if (type === 'cash') {
+            if (cashFields) cashFields.style.display = 'block';
+            if (swapFields) swapFields.style.display = 'none';
+            if (cashBtn) {
+                cashBtn.style.background = 'var(--primary)';
+                cashBtn.style.color = 'white';
+            }
+            if (swapBtn) {
+                swapBtn.style.background = '#f1f5f9';
+                swapBtn.style.color = 'var(--text-main)';
+            }
+        } else {
+            if (cashFields) cashFields.style.display = 'none';
+            if (swapFields) swapFields.style.display = 'block';
+            if (swapBtn) {
+                swapBtn.style.background = 'var(--primary)';
+                swapBtn.style.color = 'white';
+            }
+            if (cashBtn) {
+                cashBtn.style.background = '#f1f5f9';
+                cashBtn.style.color = 'var(--text-main)';
+            }
+        }
     },
 
     closeOfferSheet: function () {
-        const sheet = document.getElementById('offer-sheet');
-        if (sheet) sheet.style.display = 'none';
+        document.getElementById('offer-sheet').style.display = 'none';
+        this.state.selectedSwapProductId = null;
+        const selectedArea = document.getElementById('selected-swap-product');
+        if (selectedArea) selectedArea.style.display = 'none';
+    },
+
+    renderSwapProductPicker: function () {
+        const picker = document.getElementById('modal-swap-picker');
+        const list = document.getElementById('swap-product-list');
+        if (!picker || !list) return;
+
+        // Kullanıcının kendi ilanlarını getir (aktif olanlar ve şu anki ürün hariç)
+        const myAds = this.state.products.filter(p =>
+            (p.ownerId === this.state.user.uid || p.ownerPhone === this.state.user.phone) &&
+            p.id !== this.currentProductId &&
+            p.status === 'active'
+        );
+
+        if (myAds.length === 0) {
+            list.innerHTML = `
+                <div style="text-align: center; padding: 40px 20px;">
+                    <i class="fas fa-box-open" style="font-size: 2.5rem; color: #cbd5e1; margin-bottom: 12px;"></i>
+                    <p style="color: #64748b; font-weight: 600;">Takas edebileceğiniz aktif bir ilanınız bulunmuyor.</p>
+                    <button onclick="app.closeSwapPicker(); app.closeProductDetails(); app.showScreen('publish')" 
+                            style="margin-top: 16px; background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 700;">
+                        Yeni İlan Oluştur
+                    </button>
+                </div>
+            `;
+        } else {
+            list.innerHTML = myAds.map(p => `
+                <div onclick="app.selectProductForSwap('${p.id}')" 
+                     style="display: flex; align-items: center; gap: 12px; padding: 12px; background: white; border: 1px solid #e2e8f0; border-radius: 16px; cursor: pointer;">
+                    <img src="${p.image}" style="width: 50px; height: 50px; border-radius: 10px; object-fit: cover;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; font-size: 0.9rem; color: #1e293b;">${this.utils.escapeHTML(p.title)}</div>
+                        <div style="font-size: 0.75rem; color: #64748b;">${p.price}₺</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: #cbd5e1;"></i>
+                </div>
+            `).join('');
+        }
+
+        picker.style.display = 'flex';
+    },
+
+    selectProductForSwap: function (id) {
+        const product = this.state.products.find(p => p.id === id);
+        if (!product) return;
+
+        this.state.selectedSwapProductId = id;
+        const hiddenInput = document.getElementById('offered-product-id');
+        if (hiddenInput) hiddenInput.value = id;
+
+        const selectedArea = document.getElementById('selected-swap-product');
+        if (selectedArea) {
+            selectedArea.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <img src="${product.image}" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 800; font-size: 0.8rem; color: #1e293b;">${this.utils.escapeHTML(product.title)}</div>
+                        <div style="font-size: 0.7rem; color: #64748b;">Takas Teklifi Olarak Seçildi</div>
+                    </div>
+                    <button onclick="app.state.selectedSwapProductId = null; document.getElementById('selected-swap-product').style.display='none';" 
+                            style="background: #fee2e2; border: none; color: #ef4444; width: 24px; height: 24px; border-radius: 50%; font-size: 0.6rem;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            selectedArea.style.display = 'block';
+        }
+
+        this.closeSwapPicker();
+    },
+
+    closeSwapPicker: function () {
+        const picker = document.getElementById('modal-swap-picker');
+        if (picker) picker.style.display = 'none';
     },
 
     closeProductDetails: function () {
@@ -1503,49 +1729,5 @@ Object.assign(app, {
     closeCampaignModal: function () {
         const modal = document.getElementById('modal-campaign');
         if (modal) modal.style.display = 'none';
-    },
-
-    renderSkeletons: function () {
-        const container = document.getElementById('product-list');
-        if (!container) return;
-
-        const count = 6;
-        let html = '';
-        for (let i = 0; i < count; i++) {
-            html += `
-                <div class="product-card" style="border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden; background: var(--bg-card);">
-                    <div class="skeleton skeleton-img"></div>
-                    <div style="padding: 12px;">
-                        <div class="skeleton skeleton-title" style="width: 80%;"></div>
-                        <div class="skeleton skeleton-text" style="width: 40%;"></div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-                            <div class="skeleton skeleton-badge"></div>
-                            <div class="skeleton skeleton-badge" style="width: 40px; height: 40px; border-radius: 50%;"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        container.innerHTML = html;
-    },
-
-    renderPazarSkeletons: function () {
-        const container = document.getElementById('pazar-items-container');
-        if (!container) return;
-
-        const count = 4;
-        let html = '';
-        for (let i = 0; i < count; i++) {
-            html += `
-                <div class="pazar-premium-card" style="min-width: 140px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; overflow: hidden; position: relative;">
-                    <div class="skeleton skeleton-img" style="height: 130px;"></div>
-                    <div style="padding: 12px;">
-                        <div class="skeleton skeleton-title" style="width: 90%;"></div>
-                        <div class="skeleton skeleton-text" style="width: 60%;"></div>
-                    </div>
-                </div>
-            `;
-        }
-        container.innerHTML = html;
     }
 });
