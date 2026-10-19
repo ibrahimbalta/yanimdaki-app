@@ -3,6 +3,8 @@
     "appName": "Yanımdaki",
     "webDir": "www",
     "server": {
+        "url": "https://yanimdaki.com",
+        "cleartext": false,
         "androidScheme": "https"
     },
     "plugins": {
