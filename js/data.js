@@ -499,23 +499,90 @@ Object.assign(window.app, {
     },
 
     updateOfferStatus: async function (id, status) {
+        if (!this.checkAuth('İşlem yapmak için giriş yapmalısınız.')) return;
+
         try {
-            await db.collection('offers').doc(id).update({ status });
-            this.toast(`Teklif ${status === 'accepted' ? 'kabul edildi' : 'reddedildi'}.`);
+            const offerRef = db.collection('offers').doc(id);
 
-            // Eğer kabul edildiyse, ürünü satıldı olarak işaretleyelim ve otomatik mesaj gönderelim
             if (status === 'accepted') {
-                const offer = this.state.offers.find(o => o.id === id);
-                if (offer) {
-                    // Ürünü güncelle
-                    await db.collection('products').doc(offer.productId).update({ status: 'sold' });
+                this.toast('Teklif onaylanıyor...', 'info');
 
-                    // Mesaj gönder
-                    this.sendInternalMessage(offer.buyerPhone, offer.buyerName, `Merhabalar, "${offer.productTitle}" ilanım için verdiğiniz ${offer.price} TL teklifi kabul ettim. Ne zaman buluşabiliriz?`, offer.productId);
+                // Firestore Transaction ile atomik kontrol:
+                // Ürün zaten satıldıysa veya teklif durumu değiştiyse mükerrer kabul engellenir.
+                const transactionResult = await db.runTransaction(async (transaction) => {
+                    const offerDoc = await transaction.get(offerRef);
+                    if (!offerDoc.exists) {
+                        throw new Error('Teklif bulunamadı.');
+                    }
+
+                    const offerData = offerDoc.data();
+                    if (offerData.sellerId !== this.state.user.uid) {
+                        throw new Error('Bu teklifi kabul etme yetkiniz yok.');
+                    }
+
+                    if (offerData.status === 'accepted') {
+                        throw new Error('Bu teklif zaten daha önce kabul edilmiş.');
+                    }
+
+                    const productRef = db.collection('products').doc(offerData.productId);
+                    const productDoc = await transaction.get(productRef);
+
+                    if (!productDoc.exists) {
+                        throw new Error('İlgili ürün bulunamadı.');
+                    }
+
+                    const productData = productDoc.data();
+                    if (productData.ownerId !== this.state.user.uid) {
+                        throw new Error('Bu ürünün sahibi siz değilsiniz.');
+                    }
+
+                    if (productData.status === 'sold') {
+                        throw new Error('Bu ilan için başka bir teklif zaten kabul edilmiş ve ürün satılmış!');
+                    }
+
+                    // 1. Teklifi kabul et
+                    transaction.update(offerRef, {
+                        status: 'accepted',
+                        acceptedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    // 2. Ürünü satıldı yap
+                    transaction.update(productRef, {
+                        status: 'sold',
+                        acceptedOfferId: id,
+                        buyerId: offerData.buyerId,
+                        soldAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    return { offerData, productData };
+                });
+
+                this.toast('Teklif başarıyla kabul edildi ve ilan kapatıldı! 🎉', 'success');
+
+                // Otomatik bilgilendirme mesajı gönder
+                if (transactionResult && transactionResult.offerData) {
+                    const off = transactionResult.offerData;
+                    const autoMsg = "Merhabalar, \"" + off.productTitle + "\" ilanım için verdiğiniz " + off.price + " TL teklifi kabul ettim. Ne zaman buluşabiliriz?";
+                    this.sendInternalMessage(
+                        off.buyerPhone,
+                        off.buyerName,
+                        autoMsg,
+                        off.productId,
+                        true,
+                        off.buyerId
+                    );
                 }
+            } else {
+                // Reddetme veya iptal işlemi
+                await offerRef.update({
+                    status,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                this.toast("Teklif " + (status === "rejected" ? "reddedildi" : "güncellendi") + ".");
             }
         } catch (err) {
-            this.toast('Hata: ' + err.message, 'error');
+            console.error('updateOfferStatus error:', err);
+            this.toast('İşlem başarısız: ' + (err.message || err), 'error');
         }
     },
 

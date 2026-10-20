@@ -917,13 +917,13 @@ Object.assign(app, {
                 ` : ''}
 
                 ${isIncoming ? `
-                    <button class="action-btn-circle" onclick="event.stopPropagation(); app.closeProductDetails(); app.openChat('${o.productId}', '${o.buyerPhone}', '${this.utils.escapeHTML(o.buyerName || 'Alıcı')}')" 
+                    <button class="action-btn-circle" onclick="event.stopPropagation(); app.closeProductDetails(); app.openChat('${o.productId}', '${o.buyerPhone}', '${this.utils.escapeHTML(o.buyerName || 'Alıcı')}', '${o.buyerId}')" 
                             style="background: #e0f2fe; color: #0369a1;"><i class="fas fa-comment-dots"></i></button>
                 ` : `
                     ${(o.status === 'accepted' && !o.isRated) ? `
                         <button onclick="app.openRatingModal('${o.id}')" style="border: none; background: #FFD700; color: white; padding: 6px 12px; border-radius: 12px; font-size: 0.65rem; font-weight: 800;"><i class="fas fa-star"></i> PUANLA</button>
                     ` : ''}
-                    <button class="action-btn-circle" onclick="event.stopPropagation(); app.closeProductDetails(); app.showScreen('home'); app.openChat('${o.productId}', '${product.ownerPhone}', '${this.utils.escapeHTML(product.ownerName || 'Satıcı')}')" 
+                    <button class="action-btn-circle" onclick="event.stopPropagation(); app.closeProductDetails(); app.showScreen('home'); app.openChat('${o.productId}', '${product.ownerPhone}', '${this.utils.escapeHTML(product.ownerName || 'Satıcı')}', '${product.ownerId}')" 
                             style="background: #e0f2fe; color: #0369a1;"><i class="fas fa-comment-dots"></i></button>
                 `}
 

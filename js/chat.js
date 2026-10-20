@@ -122,9 +122,9 @@ Object.assign(window.app, {
         }
     },
 
-    openChat: function (productId, otherPhone, otherName) {
+    openChat: function (productId, otherPhone, otherName, otherId = null) {
         if (!this.checkAuth('Sohbet başlatmak için lütfen kayıt olun veya giriş yapın.')) return;
-        this.currentChat = { productId, otherPhone, otherName };
+        this.currentChat = { productId, otherPhone, otherName, otherId };
         this.showScreen('chat');
         this.renderChatWindow();
     },
@@ -236,6 +236,12 @@ Object.assign(window.app, {
 
         console.log('[sendMessage] isBuyer:', isBuyer, 'product found:', !!product);
 
+        const otherUid = this.currentChat.otherId || (product ? product.ownerId : null);
+        const participants = [this.state.user.uid];
+        if (otherUid && otherUid !== this.state.user.uid) {
+            participants.push(otherUid);
+        }
+
         const msgData = {
             productId: this.currentChat.productId,
             buyerPhone: isBuyer ? myPhone : this.currentChat.otherPhone,
@@ -244,6 +250,7 @@ Object.assign(window.app, {
             sellerName: isBuyer ? this.currentChat.otherName : this.state.user.displayName,
             senderPhone: myPhone,
             senderId: this.state.user.uid,
+            participants: participants,
             text: this.utils.cleanText(text),
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         };
@@ -281,11 +288,16 @@ Object.assign(window.app, {
         }
     },
 
-    sendInternalMessage: async function (toPhone, toName, text, productId = null, isSellerToBuyer = true) {
+    sendInternalMessage: async function (toPhone, toName, text, productId = null, isSellerToBuyer = true, targetUid = null) {
         if (!this.state.user) return;
 
         const myPhone = this.state.user.phone || '';
         const myName = this.state.user.displayName || 'Komşu';
+
+        const participants = [this.state.user.uid];
+        if (targetUid && targetUid !== this.state.user.uid) {
+            participants.push(targetUid);
+        }
 
         const msgData = {
             productId: productId,
@@ -295,6 +307,7 @@ Object.assign(window.app, {
             sellerName: isSellerToBuyer ? myName : toName,
             senderPhone: myPhone,
             senderId: this.state.user.uid,
+            participants: participants,
             text: text,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         };

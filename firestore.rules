@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper functions
+    // --- Helper Functions ---
     function isAuthenticated() {
       return request.auth != null;
     }
@@ -11,33 +11,93 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // --- Users ---
+    // Admin doğrulaması: Firebase Auth token custom claim ("admin" / "isAdmin") 
+    // VEYA Firestore users dokümanındaki isAdmin bayrağı kontrolü
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.admin == true ||
+        request.auth.token.isAdmin == true ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true)
+      );
+    }
+
+    // --- Users Koleksiyonu ---
+    // AŞAMA 2 & 3: 
+    // 1. Sadece oturum açmış kullanıcılar profilleri okuyabilir (Bot/Scraper koruması).
+    // 2. Normal kullanıcılar isAdmin bayrağını oluşturamaz veya true yapamaz.
+    // 3. Kullanıcılar yalnızca kendi profillerini güncelleyebilir.
     match /users/{userId} {
-      allow read: if true;
-      allow create, update: if isOwner(userId);
-      allow delete: if false; // Kullanıcı hesap silme özel fonksiyonla yapılır
+      allow read: if isAuthenticated();
+      
+      // Kullanıcı ilk kez profil oluştururken isAdmin alanı gönderemez (veya false olmalıdır)
+      allow create: if isOwner(userId) && (
+        !('isAdmin' in request.resource.data) || 
+        request.resource.data.isAdmin == false
+      );
+      
+      // Kullanıcı profil güncellerken isAdmin alanını değiştiremez; yalnızca adminler isAdmin değiştirebilir
+      allow update: if (isOwner(userId) && (
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin']) ||
+        request.resource.data.isAdmin == resource.data.isAdmin
+      )) || isAdmin();
+      
+      allow delete: if isOwner(userId) || isAdmin();
     }
 
     // --- Products (Pazar & İlanlar) ---
     match /products/{productId} {
       allow read: if true;
       allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
-      allow update, delete: if isAuthenticated() && (
+      allow update: if isAuthenticated() && (
         resource.data.ownerId == request.auth.uid || 
-        // Teklif kabul edildiğinde veya durum güncellendiğinde izin ver
-        request.resource.data.ownerId == request.auth.uid
+        isAdmin() ||
+        // Teklif kabul edildiğinde veya durum değişiminde ownerId korunmalı
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt', 'acceptedOfferId', 'buyerId']) && 
+         resource.data.ownerId == request.auth.uid)
       );
+      allow delete: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || isAdmin());
     }
 
-    // --- Chats & Messages ---
+    // --- Chats (Sohbetler & Mesajlar) ---
+    // AŞAMA 4: 
+    // 1. participants dizisi zorunlu: [buyerId, sellerId].
+    // 2. Yalnızca katılımcılar veya admin okuyup yazabilir.
+    // 3. Mesaj gönderen katılımcılardan biri ve senderId request.auth.uid olmalıdır.
     match /chats/{chatId} {
-      allow read, write: if isAuthenticated() && (
-        request.auth.uid in resource.data.participants ||
-        request.auth.uid in request.resource.data.participants
+      allow read: if isAuthenticated() && (
+        isAdmin() ||
+        (resource.data.participants is list && request.auth.uid in resource.data.participants) ||
+        resource.data.senderId == request.auth.uid
+      );
+      
+      allow create: if isAuthenticated() && (
+        isAdmin() ||
+        (request.resource.data.participants is list && request.auth.uid in request.resource.data.participants) ||
+        request.resource.data.senderId == request.auth.uid
+      );
+
+      allow update: if isAuthenticated() && (
+        isAdmin() ||
+        (resource.data.participants is list && request.auth.uid in resource.data.participants)
+      );
+
+      allow delete: if isAuthenticated() && (
+        isAdmin() ||
+        (resource.data.participants is list && request.auth.uid in resource.data.participants)
       );
 
       match /messages/{messageId} {
-        allow read, write: if isAuthenticated();
+        allow read: if isAuthenticated() && (
+          isAdmin() ||
+          request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants
+        );
+        allow create: if isAuthenticated() && (
+          isAdmin() ||
+          (request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants &&
+           request.resource.data.senderId == request.auth.uid)
+        );
+        allow update, delete: if isAdmin();
       }
     }
 
@@ -45,12 +105,19 @@ service cloud.firestore {
     match /offers/{offerId} {
       allow read: if isAuthenticated() && (
         resource.data.buyerId == request.auth.uid ||
-        resource.data.sellerId == request.auth.uid
+        resource.data.sellerId == request.auth.uid ||
+        isAdmin()
       );
       allow create: if isAuthenticated() && request.resource.data.buyerId == request.auth.uid;
       allow update: if isAuthenticated() && (
         resource.data.buyerId == request.auth.uid ||
-        resource.data.sellerId == request.auth.uid
+        resource.data.sellerId == request.auth.uid ||
+        isAdmin()
+      );
+      allow delete: if isAuthenticated() && (
+        resource.data.buyerId == request.auth.uid ||
+        resource.data.sellerId == request.auth.uid ||
+        isAdmin()
       );
     }
 
@@ -58,7 +125,7 @@ service cloud.firestore {
     match /shares/{shareId} {
       allow read: if true;
       allow create: if isAuthenticated();
-      allow update, delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isAdmin());
     }
 
     // --- Favorites ---
@@ -66,7 +133,8 @@ service cloud.firestore {
       allow read, write: if isAuthenticated() && (
         resource == null || 
         resource.data.userId == request.auth.uid || 
-        request.resource.data.userId == request.auth.uid
+        request.resource.data.userId == request.auth.uid ||
+        isAdmin()
       );
     }
 
@@ -75,7 +143,9 @@ service cloud.firestore {
       allow read, write: if isAuthenticated() && (
         resource == null ||
         resource.data.userId == request.auth.uid ||
-        request.resource.data.userId == request.auth.uid
+        request.resource.data.userId == request.auth.uid ||
+        (resource.data.userId == 'admin' && isAdmin()) ||
+        isAdmin()
       );
     }
 
@@ -86,55 +156,58 @@ service cloud.firestore {
     match /ratings/{ratingId} {
       allow read: if true;
       allow create: if isAuthenticated();
-      allow update, delete: if false;
+      allow update, delete: if isAdmin();
     }
 
-    // --- Applications & Reports ---
+    // --- Applications & Reports (AŞAMA 5: Admin Paneli Yetkileri) ---
     match /reports/{reportId} {
       allow create: if isAuthenticated();
-      allow read, update, delete: if false; // Yalnızca admin konsolu
+      allow read, update, delete: if isAdmin();
     }
     match /contact_messages/{msgId} {
       allow create: if true;
-      allow read, update, delete: if false;
+      allow read, update, delete: if isAdmin();
     }
     match /esnaf_applications/{appId} {
-      allow create, read: if isAuthenticated();
-      allow update, delete: if false;
+      allow create: if isAuthenticated();
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
     }
     match /partner_applications/{appId} {
-      allow create, read: if isAuthenticated();
-      allow update, delete: if false;
+      allow create: if isAuthenticated();
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
     }
     match /payments/{paymentId} {
-      allow create, read: if isAuthenticated();
-      allow update, delete: if false;
+      allow create: if isAuthenticated();
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
     }
     match /subscriptions/{subId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
 
-    // --- Public Reference Data ---
+    // --- Public Reference Data & Config ---
     match /banners/{bannerId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
     match /campaigns/{campaignId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
     match /config/{configId} {
       allow read: if true;
-      allow write: if false;
+      allow write: if isAdmin();
     }
     match /gallery/{galleryId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
     match /safe_points/{pointId} {
       allow read: if true;
-      allow write: if false;
+      allow write: if isAdmin();
     }
   }
 }

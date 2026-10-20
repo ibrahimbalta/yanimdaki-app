@@ -5131,7 +5131,7 @@ Object.assign(app, {
                             ` : ''}
 
                             ${!isOwner ? `
-                                <button onclick="app.closeProductDetails(); app.openChat('${id}', '${product.ownerPhone}', '${product.ownerName}')" 
+                                <button onclick="app.closeProductDetails(); app.openChat('${id}', '${product.ownerPhone}', '${product.ownerName}', '${product.ownerId}')" 
                                     style="background: white; border: 2.5px solid #00ADEF; color: #00ADEF; padding: 14px; border-radius: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: 0.3s; font-size: 0.95rem; width: 100%;">
                                     <i class="fas fa-comment-dots"></i> Soru Sor
                                 </button>
@@ -5188,7 +5188,7 @@ Object.assign(app, {
                                         style="flex: 1; height: 38px; background: #25D366; color: white; border: none; font-size: 0.8rem; border-radius: 8px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;">
                                         <i class="fab fa-whatsapp"></i> WhatsApp
                                     </button>
-                                    <button onclick="app.closeProductDetails(); app.openChat('${product.id}', '${isOwner ? acceptedOffer.buyerPhone : product.ownerPhone}', '${this.utils.escapeHTML((isOwner ? acceptedOffer.buyerName : product.ownerName) || (isOwner ? 'Alıcı' : 'Satıcı'))}')" 
+                                    <button onclick="app.closeProductDetails(); app.openChat('${product.id}', '${isOwner ? acceptedOffer.buyerPhone : product.ownerPhone}', '${this.utils.escapeHTML((isOwner ? acceptedOffer.buyerName : product.ownerName) || (isOwner ? 'Alıcı' : 'Satıcı'))}', '${isOwner ? acceptedOffer.buyerId : product.ownerId}')" 
                                         style="flex: 1; height: 38px; background: var(--bg-card); color: var(--primary); border: 1px solid var(--border-color); font-size: 0.8rem; border-radius: 8px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;">
                                         <i class="fas fa-comment-dots"></i> Mesaj
                                     </button>
@@ -5931,6 +5931,13 @@ Object.assign(app, {
             chatData.sellerPhone = this.currentChat.otherPhone;
         }
 
+        const safePointOtherUid = this.currentChat.otherId || product.ownerId;
+        chatData.senderId = this.state.user.uid;
+        chatData.participants = [this.state.user.uid];
+        if (safePointOtherUid && safePointOtherUid !== this.state.user.uid) {
+            chatData.participants.push(safePointOtherUid);
+        }
+
         db.collection('chats').add(chatData)
             .then(() => {
                 this.toast('Buluşma noktası önerildi. ✨');
@@ -6659,7 +6666,7 @@ Object.assign(app, {
         const product = this.state.products.find(p => p.ownerId === this.currentSellerId);
 
         this.closeSellerProfile();
-        this.openChat(product ? product.id : null, this.currentSellerPhone, this.currentSellerName);
+        this.openChat(product ? product.id : null, this.currentSellerPhone, this.currentSellerName, this.currentSellerId);
     },
 
     openAskidaFlowFromProfile: function () {
