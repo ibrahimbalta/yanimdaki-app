@@ -22,6 +22,16 @@ const adminApp = {
     init: function () {
         console.log("Admin Panel Başlatıldı...");
 
+        // Kaydedilmiş daraltma tercihini uygula
+        const savedCollapsed = localStorage.getItem('admin_sidebar_collapsed') === 'true';
+        if (savedCollapsed) {
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) sidebar.classList.add('collapsed');
+            document.body.classList.add('sidebar-collapsed');
+            const btn = document.getElementById('sidebar-collapse-btn');
+            if (btn) btn.title = 'Menüyü Genişlet';
+        }
+
         firebase.auth().onAuthStateChanged(async (user) => {
             if (user) {
                 try {
@@ -189,7 +199,20 @@ const adminApp = {
         if (event && event.currentTarget) {
             event.currentTarget.classList.add('active');
         }
-        document.getElementById('tab-title').textContent = tab.charAt(0).toUpperCase() + tab.slice(1);
+        const tabTitles = {
+            'dashboard': 'Genel Bakış (Dashboard)',
+            'users': 'Kullanıcı Yönetimi',
+            'ads': 'İlan Yönetimi',
+            'payments': 'Ödeme Onayları',
+            'gallery_applications': 'Vitrin Başvuruları',
+            'partners': 'İş Ortakları (Güvenli Noktalar)',
+            'gallery': 'Sponsorlu Galeri',
+            'banners': 'Ana Sayfa Banner Yönetimi',
+            'campaigns': 'Kampanyalar',
+            'reports': 'Şikayetler & Moderasyon',
+            'reset': 'Sistemi Sıfırla'
+        };
+        document.getElementById('tab-title').textContent = tabTitles[tab] || (tab.charAt(0).toUpperCase() + tab.slice(1));
 
         // Mobilde sekme tıklandığında sidebar'ı kapat
         if (window.innerWidth <= 1024) {
@@ -197,6 +220,20 @@ const adminApp = {
         }
 
         this.render();
+    },
+
+    toggleCollapse: function () {
+        const sidebar = document.querySelector('.sidebar');
+        if (!sidebar) return;
+        const isCollapsed = sidebar.classList.toggle('collapsed');
+        document.body.classList.toggle('sidebar-collapsed', isCollapsed);
+
+        localStorage.setItem('admin_sidebar_collapsed', isCollapsed ? 'true' : 'false');
+
+        const btn = document.getElementById('sidebar-collapse-btn');
+        if (btn) {
+            btn.title = isCollapsed ? 'Menüyü Genişlet' : 'Menüyü Daralt';
+        }
     },
 
     toggleSidebar: function () {

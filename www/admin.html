@@ -57,13 +57,178 @@
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
             border-right: 1px solid var(--border-color);
-            padding: 32px 20px;
+            padding: 24px 16px;
             display: flex;
             flex-direction: column;
             position: fixed;
             height: 100vh;
             z-index: 1000;
-            transition: all 0.4s ease;
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), padding 0.35s ease, transform 0.4s ease;
+            overflow-x: hidden;
+        }
+
+        .sidebar.collapsed {
+            width: 78px;
+            padding: 24px 10px;
+        }
+
+        .sidebar-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            padding: 0 4px;
+            position: relative;
+        }
+
+        .sidebar.collapsed .sidebar-top {
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .sidebar-toggle-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
+        }
+
+        .sidebar-toggle-btn:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+            transform: scale(1.08);
+            background: var(--primary-light);
+        }
+
+        .sidebar.collapsed .sidebar-toggle-btn {
+            position: absolute;
+            right: -2px;
+            top: -10px;
+            width: 22px;
+            height: 22px;
+            font-size: 0.65rem;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0, 173, 239, 0.4);
+            transform: rotate(180deg);
+        }
+
+        .sidebar.collapsed .sidebar-toggle-btn:hover {
+            transform: rotate(180deg) scale(1.18);
+        }
+
+        .header-toggle-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .header-toggle-btn:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+            background: var(--primary-light);
+            transform: translateY(-1px);
+        }
+
+        .sidebar.collapsed .sidebar-logo .logo-text {
+            display: none !important;
+            opacity: 0;
+            width: 0;
+        }
+
+        .sidebar.collapsed .nav-label {
+            display: none !important;
+            opacity: 0;
+            height: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sidebar.collapsed .nav-section {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed rgba(226, 232, 240, 0.8);
+        }
+
+        .sidebar.collapsed .nav-section:last-child {
+            border-bottom: none;
+        }
+
+        .sidebar.collapsed .nav-link {
+            justify-content: center;
+            padding: 12px 0;
+            gap: 0;
+            margin-bottom: 6px;
+            position: relative;
+        }
+
+        .sidebar.collapsed .nav-link:hover {
+            transform: scale(1.08);
+        }
+
+        .sidebar.collapsed .nav-link span {
+            display: none !important;
+            opacity: 0;
+            width: 0;
+        }
+
+        .sidebar.collapsed .nav-link:hover::after {
+            content: attr(data-title);
+            position: absolute;
+            left: calc(100% + 14px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: #0f172a;
+            color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 7px 14px;
+            border-radius: 10px;
+            white-space: nowrap;
+            z-index: 2000;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            pointer-events: none;
+            animation: tooltipSlideIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .sidebar.collapsed .nav-link:hover::before {
+            content: '';
+            position: absolute;
+            left: calc(100% + 8px);
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 5px 6px 5px 0;
+            border-style: solid;
+            border-color: transparent #0f172a transparent transparent;
+            z-index: 2000;
+            pointer-events: none;
+        }
+
+        @keyframes tooltipSlideIn {
+            from { opacity: 0; transform: translateY(-50%) translateX(-6px); }
+            to { opacity: 1; transform: translateY(-50%) translateX(0); }
         }
 
         .sidebar-logo {
@@ -162,6 +327,12 @@
             margin-left: 280px;
             padding: 40px;
             max-width: calc(100vw - 280px);
+            transition: margin-left 0.35s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.sidebar-collapsed .main {
+            margin-left: 78px;
+            max-width: calc(100vw - 78px);
         }
 
         .header {
@@ -569,59 +740,64 @@
     </div>
 
     <aside class="sidebar">
-        <a href="#" class="sidebar-logo">
-            <div class="logo-icon">
-                <i class="fas fa-location-dot"></i>
-            </div>
-            <div class="logo-text">Yanım<span>daki</span></div>
-        </a>
+        <div class="sidebar-top">
+            <a href="#" class="sidebar-logo" style="margin-bottom: 0; padding: 0;">
+                <div class="logo-icon">
+                    <i class="fas fa-location-dot"></i>
+                </div>
+                <div class="logo-text">Yanım<span>daki</span></div>
+            </a>
+            <button id="sidebar-collapse-btn" class="sidebar-toggle-btn" onclick="adminApp.toggleCollapse()" title="Menüyü Daralt/Genişlet">
+                <i class="fas fa-angles-left"></i>
+            </button>
+        </div>
 
         <nav style="flex: 1; overflow-y: auto;">
             <div class="nav-section">
                 <div class="nav-label">Genel</div>
-                <div class="nav-link active" onclick="adminApp.switchTab('dashboard')">
+                <div class="nav-link active" data-title="Dashboard" onclick="adminApp.switchTab('dashboard')">
                     <i class="fas fa-chart-line"></i> <span>Dashboard</span>
                 </div>
-                <div class="nav-link" onclick="adminApp.switchTab('users')">
+                <div class="nav-link" data-title="Kullanıcılar" onclick="adminApp.switchTab('users')">
                     <i class="fas fa-user-group"></i> <span>Kullanıcılar</span>
                 </div>
-                <div class="nav-link" onclick="adminApp.switchTab('ads')">
+                <div class="nav-link" data-title="İlan Yönetimi" onclick="adminApp.switchTab('ads')">
                     <i class="fas fa-layer-group"></i> <span>İlan Yönetimi</span>
                 </div>
             </div>
 
             <div class="nav-section">
                 <div class="nav-label">Ticari + Vitrin</div>
-                <div class="nav-link" onclick="adminApp.switchTab('payments')">
+                <div class="nav-link" data-title="Ödeme Onayları" onclick="adminApp.switchTab('payments')">
                     <i class="fas fa-file-invoice-dollar"></i> <span>Ödeme Onayları</span>
                 </div>
-                <div class="nav-link" onclick="adminApp.switchTab('gallery_applications')">
+                <div class="nav-link" data-title="Vitrin Başvuruları" onclick="adminApp.switchTab('gallery_applications')">
                     <i class="fas fa-star-half-stroke"></i> <span>Vitrin Başvuruları</span>
                 </div>
-                <div class="nav-link" onclick="adminApp.switchTab('partners')">
+                <div class="nav-link" data-title="İş Ortakları" onclick="adminApp.switchTab('partners')">
                     <i class="fas fa-handshake-simple"></i> <span>İş Ortakları</span>
                 </div>
             </div>
 
             <div class="nav-section">
                 <div class="nav-label">İçerik + Reklam</div>
-                <div class="nav-link" onclick="adminApp.switchTab('gallery')">
+                <div class="nav-link" data-title="Sponsorlu Galeri" onclick="adminApp.switchTab('gallery')">
                     <i class="fas fa-images"></i> <span>Sponsorlu Galeri</span>
                 </div>
-                <div class="nav-link" onclick="adminApp.switchTab('banners')">
+                <div class="nav-link" data-title="Ana Sayfa Banner" onclick="adminApp.switchTab('banners')">
                     <i class="fas fa-rectangle-ad"></i> <span>Ana Sayfa Banner</span>
                 </div>
-                <div class="nav-link" onclick="adminApp.switchTab('campaigns')">
+                <div class="nav-link" data-title="Kampanyalar" onclick="adminApp.switchTab('campaigns')">
                     <i class="fas fa-bullhorn"></i> <span>Kampanyalar</span>
                 </div>
             </div>
 
             <div class="nav-section">
                 <div class="nav-label">Sistem</div>
-                <div class="nav-link" onclick="adminApp.switchTab('reports')">
+                <div class="nav-link" data-title="Şikayetler" onclick="adminApp.switchTab('reports')">
                     <i class="fas fa-shield-virus"></i> <span>Şikayetler</span>
                 </div>
-                <div class="nav-link" style="color: #f87171;" onclick="adminApp.switchTab('reset')">
+                <div class="nav-link" style="color: #f87171;" data-title="Sistemi Sıfırla" onclick="adminApp.switchTab('reset')">
                     <i class="fas fa-circle-exclamation"></i> <span>Sistemi Sıfırla</span>
                 </div>
             </div>
@@ -630,9 +806,14 @@
 
     <main class="main">
         <header class="header">
-            <div class="welcome-box">
-                <h1 id="tab-title">Hoş Geldiniz 👋</h1>
-                <p>Uygulamanızın bugün neler yaptığını görün.</p>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <button id="header-sidebar-toggle-btn" class="header-toggle-btn" onclick="adminApp.toggleCollapse()" title="Menüyü Daralt/Genişlet">
+                    <i class="fas fa-bars-staggered"></i>
+                </button>
+                <div class="welcome-box">
+                    <h1 id="tab-title">Hoş Geldiniz 👋</h1>
+                    <p>Uygulamanızın bugün neler yaptığını görün.</p>
+                </div>
             </div>
 
             <div class="user-nav">
